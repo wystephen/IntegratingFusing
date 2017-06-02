@@ -1,0 +1,110 @@
+cmake_minimum_required(VERSION 3.6)
+project(IntegratingFusing)
+
+set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_BUILD_TOOL Release)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O4 -msse2 -msse3 -msse4 -lopencv_aruco -lpthread ")
+#set(CUDA_NVCC_FLAGSS ${CUDA_NVCC_FLAGS} --gpu-architecture sm_20)
+
+
+
+#find_package(CUDA REQUIRED)
+#include(FindCUDA)
+find_package(Eigen3 REQUIRED)
+
+#find_package(PythonLibs 3.0 REQUIRED)
+find_package(PythonLibs 2.7 REQUIRED)
+
+find_package(Sophus REQUIRED)
+
+find_package(OpenMP)
+find_package(BLAS)
+find_package(LAPACK)
+
+
+LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
+
+# G2O
+SET(G2O_ROOT /usr/local/include/g2o)
+FIND_PACKAGE(G2O)
+FIND_PACKAGE(CSparse)
+
+
+if (OPENMP_FOUND)
+    message("OPENMP FOUND")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif ()
+
+SET(G2O_ROOT /usr/local/include/g2o)
+FIND_PACKAGE(G2O)
+FIND_PACKAGE(CSparse)
+
+include_directories(
+        ${EIGEN3_INCLUDE_DIR}
+        ./include
+        /usr/local/cuda/include
+        /home/steve/Cpp_Extent/Cpp_Extent
+        ${PYTHON_INDCLUDE_PATH}
+        /usr/include
+        /usr/local/include
+        ${Sophus_INCLUDE_DIRS}
+        ${BLAS_INCLUDE_DIRS}
+        /usr/local/include
+        ${CSPARSE_INCLUDE_DIR}
+        ${G2O_INCLUDE_DIR}
+)
+
+link_directories(
+        /usr/local/lib
+        /usr/lib
+        /usr/lib/x86_64-linux-gnu
+        ${BLAS_LIBRARIES}
+        ${LAPACK_LIBRARIES}
+        ./include
+)
+
+
+SET(G2O_LIBS g2o_cli g2o_ext_freeglut_minimal g2o_simulator
+        g2o_solver_slam2d_linear g2o_types_icp g2o_types_slam2d
+        g2o_core g2o_interface g2o_solver_csparse g2o_solver_structure_only
+        g2o_types_sba g2o_types_slam3d g2o_csparse_extension g2o_opengl_helper
+        g2o_solver_dense g2o_stuff g2o_types_sclam2d g2o_parser g2o_solver_pcg
+        g2o_types_data g2o_types_sim3 cxsparse
+        g2o_types_slam3d_addons)
+
+
+#FILE(GLOB SOURCES "*.cu" "*.cpp" "*.c" "*.h")
+
+#set(SOURCE_FILES main.cpp include/EKF.hpp)
+#add_executable(QuickFusing ${SOURCE_FILES} )
+#target_link_libraries(QuickFusing ${PYTHON_LIBRARIES})
+
+#add_executable(gt graph_test.cpp)
+#add_executable(fast_demo FastUwbDemo.cpp)
+#target_link_libraries(gt ${G2O_LIBS} ${CSPARSE_LIBRARY} ${PYTHON_LIBRARIES} )
+#target_link_libraries(fast_demo ${G2O_LIBS} ${CSPARSE_LIBRARY} ${PYTHON_LIBRARIES} )
+#
+#
+add_executable(IntegratingIMU src/IntegratingIMUDemo.cpp)
+target_link_libraries(IntegratingIMU ${Sophus_LIBRARIES}  ${G2O_LIBS} ${CSPARSE_LIBRARY} ${PYTHON_LIBRARIES} )
+#
+## For test
+#
+#add_executable(fun_test func_test.cpp)
+#target_link_libraries(fun_test ${PYTHON_LIBRARIES})
+#
+##
+##add_executable(resultevaluation ResultEvaluation.cpp)
+##target_link_libraries(resultevaluation ${PYTHON_LIBRARIES})
+#
+#add_executable(pf_test pf_test.cpp)
+#target_link_libraries(pf_test ${PYTHON_LIBRARIES} ${Sophus_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+##
+#add_executable(SophusTest SophusTest.cpp)
+#target_link_libraries(SophusTest ${Sophus_LIBRARIES})
+#
+#add_executable(pdr_pf_test pdr_pf_test.cpp)
+#target_link_libraries(pdr_pf_test ${PPYTHON_LIBRARIES} ${Sophus_LIBRARIES} ${BLAS_LIBRARIES})
