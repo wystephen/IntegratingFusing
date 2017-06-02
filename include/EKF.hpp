@@ -1,22 +1,20 @@
 #pragma once
 //
-// Created by steve on 17-1-17.
+// Created by steve on 16-11-23.
 //
 
-#ifndef QUICKFUSING_MYEKF_H
-#define QUICKFUSING_MYEKF_H
+//Create by steve in 16-11-23 at 下午8:02
 
-
-#include "sophus/so3.h"
-#include "sophus/se3.h"
 #include "SettingPara.h"
 
 
-#include <deque>
+#ifndef QUICKFUSING_EKF_HPP
+#define QUICKFUSING_EKF_HPP
 
-class MyEkf {
+
+class Ekf {
 public:
-    MyEkf(SettingPara para) {
+    Ekf(SettingPara para) {
 //        MYCHECK(1);
 
         para_ = para;
@@ -43,7 +41,7 @@ public:
 
     }
 
-    MyEkf(const MyEkf &orig) {
+    Ekf(const Ekf &orig) {
         para_ = orig.para_;
 //
         R_ = orig.R_;
@@ -66,44 +64,6 @@ public:
 
     }
 
-    /**
-    * compute the heading orietation of imu
-    * @return
-    */
-    double ComputeHeading() {
-        Eigen::Matrix3d rotation_matrix;
-        rotation_matrix = q2dcm(quat_);
-        Eigen::Vector3d xori(1.0, 0.0, 0.0);
-        xori = rotation_matrix * xori;
-//        std::cout << xori.transpose() << std::endl;
-        double norm = xori(0) * xori(0) + xori(1) * xori(1);
-
-        norm = std::sqrt(norm);
-        xori = xori / norm;
-
-        double theta = std::acos(xori(0));
-        theta = theta / M_PI * 180.0;
-
-        if (xori(1) < 0) {
-            theta *= -1.0;
-        }
-//        std::partial_sum()
-
-        if (theta < 0.0) {
-            theta = 360 + theta;
-        }
-
-        return theta;
-//        return xori(0);
-    }
-
-
-    /**
-     * Deep copy from in to out.
-     * @param in  source
-     * @param out target
-     * @return
-     */
     bool CopyMatrix(Eigen::MatrixXd in, Eigen::MatrixXd &out) {
         out.resize(in.rows(), in.cols());
 
@@ -117,11 +77,6 @@ public:
     }
 
 
-    /**
-     * Initial parameters in navigation equation.
-     * @param u
-     * @return
-     */
     bool InitNavEq(Eigen::MatrixXd u) {
 
         double f_u(0.0), f_v(0.0), f_w(0.0);
@@ -147,10 +102,6 @@ public:
         return true;
     }
 
-    /**
-     * Initial Filter .(only run in construct function.)
-     * @return
-     */
     bool InitialFilter() {
 //        MYCHECK("1");
         for (int i(0); i < 3; ++i) {
@@ -173,10 +124,8 @@ public:
 
 //protected:
 
-    /**
-     * eular angle
-     * @param ang
-     * @return rotation matrix.
+    /*
+     * Euler to Rotation Matrix.
      */
     Eigen::MatrixXd Rt2b(Eigen::Vector3d ang) {
         double cr(cos(ang[0])), sr(sin(ang[0]));
@@ -201,10 +150,8 @@ public:
     }
 
 
-    /**
-     *  Rotation matrix to quanternions
-     * @param R rotation matrix
-     * @return quanternions
+    /*
+     * Rotation matrix to quanternions.
      */
     Eigen::Vector4d dcm2q(Eigen::Matrix3d R) {
 //        MYCHECK(1);
@@ -216,7 +163,7 @@ public:
 
         try {
             // 1e-3  ==>>>  fabs(T) != 0
-            if (fabs(T) > 1e-8) {
+            if (fabs(T) > 1e-3) {
                 S = 0.5 / sqrt(fabs(T));
 
                 qw = 0.25 / S;
@@ -265,10 +212,8 @@ public:
     }
 
 
-    /**
-     * Quternon to rotation matrix
-     * @param q quternion
-     * @return  rotation matrix
+    /*
+     *Quanternions to rotation matrix.
      */
     Eigen::Matrix3d q2dcm(Eigen::Vector4d q) {
 //        MYCHECK(1);
@@ -330,7 +275,6 @@ public:
 
 //        MYCHECK(1);
 
-
         Eigen::VectorXd y;
         y.resize(9);
 
@@ -363,9 +307,6 @@ public:
             OMEGA(3, 1) = -Q;
             OMEGA(3, 2) = -R;
 
-
-            //TODO: Try to use rotation matrix?
-            // first-order Runge-Kutta use to update the q....
             quat_ = (cos(v / 2.0) * Eigen::Matrix4d::Identity() +
                      2.0 / v * sin(v / 2.0) * OMEGA) * (q);
 
@@ -377,7 +318,7 @@ public:
             /*
              * Need not do any thing.
              */
-            quat_ = q;
+//            quat_ = q;
         }
 
 //        MYCHECK(1);
@@ -467,7 +408,6 @@ public:
 
     }
 
-
     Eigen::VectorXd ComputeInternalState(Eigen::VectorXd x_in,
                                          Eigen::VectorXd dx,
                                          Eigen::VectorXd q_in) {
@@ -495,10 +435,6 @@ public:
 
         R = (Eigen::Matrix3d::Identity() - OMEGA) * (R);
 
-//        std::cout << "current R:" << R << std::endl;
-        //std::cout << "delta theta :" << get
-            
-
         quat_ = dcm2q(R);
 
         return x_out;
@@ -522,156 +458,20 @@ public:
 
             Eigen::MatrixXd K;
             K = P_ * H_.transpose().eval() * (H_ * P_ * H_.transpose().eval() + R_).inverse();
-//            K = P_ * H_.transpose() * R_.inverse();
 
             Eigen::VectorXd dx = K * z;
-            dx_ = dx;
 
             Eigen::MatrixXd Id;
             Id.resize(9, 9);
             Id.setIdentity();
 
             P_ = (Id - K * H_) * P_;
-//            P_ = (Id-K_*H_)*P_*(Id-K_*H_).transpose() + K_ * R_ * K_.transpose();
 
             x_h_ = ComputeInternalState(x_h_, dx, quat_);
         }
-
-
-//        P_ = (P_.eval() * 0.5 + P_.transpose().eval() * 0.5);
-        P_ = (P_ + P_.transpose()) /2.0;
-
-
-        /**
-         * Plugin module....
-         */
-        Eigen::Vector3d xaxis(1.0, 0.0, 0.0);
-        xaxis = q2dcm(quat_) * xaxis;
-
-        double normal = std::sqrt(xaxis(0) * xaxis(0) + xaxis(1) * xaxis(1));
-        heading_vec_deque_.push_back(Eigen::Vector2d(xaxis(0) / normal, xaxis(1) / normal));
-        while (heading_vec_deque_.size() > 40) {
-            heading_vec_deque_.pop_front();
-        }
-
-        if (zupt1 < 0.5 && last_zupt_ == true) {
-            last_chage_state_ = x_h_;
-            count_move_times_ = 0;
-        }
-        count_move_times_++;
-
-        if (zupt1 > 0.5 && last_zupt_ == false) {
-            Eigen::VectorXd deltax = x_h_ - last_chage_state_;
-
-            double move_time = (double(count_move_times_) * para_.Ts_);
-
-            double velocity_lastest = std::sqrt(deltax(0) * deltax(0) + deltax(1) * deltax(1));
-
-            velocity_lastest = velocity_lastest / move_time;
-
-            velocity_deque_.push_back(velocity_lastest);
-
-            while (velocity_deque_.size() > 20) {
-                velocity_deque_.pop_front();
-            }
-
-        }
-
-        if (zupt1 > 0.5) {
-            last_zupt_ = true;
-        } else {
-            last_zupt_ = false;
-        }
-
+        P_ = (P_.eval() * 0.5 + P_.transpose().eval() * 0.5);
 
         return x_h_;
-    }
-
-    double getOriente() {
-//        Eigen::Vector2d avg_vec = std::partial_sum(heading_vec_deque_.begin(),
-//                                                   heading_vec_deque_.end(),
-//                                                   Eigen::Vector2d( 0, 0));
-
-//        avg_vec /= double(heading_vec_deque_.size());
-        Eigen::Vector2d avg_vec(0, 0);
-        for (int i(0); i < heading_vec_deque_.size(); ++i) {
-            avg_vec += heading_vec_deque_.at(i);
-        }
-        avg_vec /= double(heading_vec_deque_.size());
-
-        avg_vec /= avg_vec.norm();
-
-        double theta = std::acos(avg_vec(0));
-        if (avg_vec(1) < 0) {
-            theta *= -1.0;
-        }
-//        std::cout <<"current dx_:"<< dx_  << std::endl;
-//        std::cout << "current p"<< P_ << std::endl;
-
-        return theta * 180.0 / M_PI;
-
-    }
-
-    /**
-     * Get Delta of Orientation;
-     * @return
-     */
-    double getDeltaOrientation() {
-
-    }
-
-
-    /**
-     *
-     * @return This velocity equal to the velocity of head times 2.0 .
-     */
-    double getVelocity() {
-        if (velocity_deque_.size() == 0) return 0.0;
-        double avg_velocity(0.0);
-        for (int i(0); i < velocity_deque_.size(); ++i) {
-            avg_velocity += velocity_deque_.at(i);
-        }
-        return avg_velocity / double(velocity_deque_.size());
-    }
-
-    /**
-     *
-     * @return
-     */
-//    double getDeltaVelocity(){
-//
-//        if(velocity_deque_.size()>5)
-//        {
-//
-//        }
-//
-//       return 0.0;
-//    }
-    Eigen::Isometry3d getTransformation()
-    {
-        Eigen::Isometry3d transform = (Eigen::Isometry3d::Identity());
-
-        Eigen::Quaterniond the_quat;
-        the_quat.x() = quat_(0);
-        the_quat.y() = quat_(1);
-        the_quat.z() = quat_(2);
-        the_quat.w() = quat_(3);
-
-        Eigen::Vector3d offset(x_h_(0),x_h_(1),x_h_(2));
-
-        Eigen::Matrix3d rotation_matrix = the_quat.toRotationMatrix();
-
-        for (int ix(0); ix < 3; ++ix) {
-            for (int iy(0); iy < 3; ++iy) {
-                transform(ix, iy) = rotation_matrix(ix, iy);
-            }
-        }
-
-        for (int ix(0); ix < 3; ++ix) {
-            transform(ix, 3) = offset(ix);
-        }
-
-        return transform;
     }
 
 
@@ -698,19 +498,8 @@ private:
 
     Eigen::Vector4d quat_;
 
-    Eigen::MatrixXd dx_;
-
-
-    std::deque<Eigen::Vector2d> heading_vec_deque_;
-    std::deque<double> velocity_deque_;
-    int count_move_times_ = 0;
-
-
-    Eigen::VectorXd last_chage_state_;
-
-    bool last_zupt_ = true;
-
 
 };
 
-#endif //QUICKFUSING_MYEKF_H
+
+#endif //QUICKFUSING_EKF_HPP

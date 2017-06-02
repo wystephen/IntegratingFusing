@@ -76,18 +76,6 @@ SET(G2O_LIBS g2o_cli g2o_ext_freeglut_minimal g2o_simulator
         g2o_types_slam3d_addons)
 
 
-#FILE(GLOB SOURCES "*.cu" "*.cpp" "*.c" "*.h")
-
-#set(SOURCE_FILES main.cpp include/EKF.hpp)
-#add_executable(QuickFusing ${SOURCE_FILES} )
-#target_link_libraries(QuickFusing ${PYTHON_LIBRARIES})
-
-#add_executable(gt graph_test.cpp)
-#add_executable(fast_demo FastUwbDemo.cpp)
-#target_link_libraries(gt ${G2O_LIBS} ${CSPARSE_LIBRARY} ${PYTHON_LIBRARIES} )
-#target_link_libraries(fast_demo ${G2O_LIBS} ${CSPARSE_LIBRARY} ${PYTHON_LIBRARIES} )
-#
-#
 add_executable(IntegratingIMU src/IntegratingIMUDemo.cpp)
 target_link_libraries(IntegratingIMU ${Sophus_LIBRARIES}  ${G2O_LIBS} ${CSPARSE_LIBRARY} ${PYTHON_LIBRARIES} )
 #
