@@ -60,12 +60,8 @@ public:
 
         Eigen::Vector3d attitude(roll, pitch, para_.init_heading1_);
 
-//        Eigen::Matrix3d Rb2t = Rt2b(attitude);
-//        Rb2t.transposeInPlace();
+        SO3_rotation_ = Sophus::SO3(roll,pitch,para_.init_heading1_);
 
-//        quat_ = dcm2q(Rb2t);
-//        Eigen::Rotation3d
-        quaterniond_ = Eigen::AngleAxis<double>(attitude.norm(),attitude/attitude.norm());
 
         x_h_.block(0, 0, 3, 1) = para_.init_pos1_;
         x_h_.block(6, 0, 3, 1) = attitude;
@@ -79,7 +75,7 @@ public:
  * @return
  */
     bool InitialFilter() {
-//        MYCHECK("1");
+
         for (int i(0); i < 3; ++i) {
             P_(i, i) = para_.sigma_initial_pos1_(i) * para_.sigma_initial_pos1_(i);
             P_(i + 3, i + 3) = para_.sigma_initial_vel1_(i) * para_.sigma_initial_vel1_(i);
@@ -99,7 +95,6 @@ public:
 
     Eigen::VectorXd NavigationEquation(Eigen::VectorXd x_h,
                                        Eigen::VectorXd u,
-                                       Eigen::Quaterniond q,
                                        double dt) {
 
 //        MYCHECK(1);
@@ -107,74 +102,40 @@ public:
 
         Eigen::VectorXd y;
         y.resize(9);
+        y.setZero();
 
-        Eigen::Vector3d w_tb(u.block(3, 0, 3, 1));
+        Eigen::Vector3d w_tb(u(3),u(4),u(5));
 
-        double v(w_tb.norm() * dt);
+        if (fabs(w_tb.norm()) > 1e-8) {
 
-        if (fabs(v) > 1e-8) {
-            double P(w_tb(0) * dt * 0.5);
-            double Q(w_tb(1) * dt * 0.5);
-            double R(w_tb(2) * dt * 0.5);
+            SO3_rotation_ = Sophus::SO3::exp((w_tb)*dt)*SO3_rotation_;
 
-            Eigen::Matrix4d OMEGA;
-
-            OMEGA.setZero();
-
-            OMEGA(0, 1) = R;
-            OMEGA(0, 2) = -Q;
-            OMEGA(0, 3) = P;
-
-            OMEGA(1, 0) = -R;
-            OMEGA(1, 2) = P;
-            OMEGA(1, 3) = Q;
-
-            OMEGA(2, 0) = Q;
-            OMEGA(2, 1) = -P;
-            OMEGA(2, 3) = R;
-
-            OMEGA(3, 0) = -P;
-            OMEGA(3, 1) = -Q;
-            OMEGA(3, 2) = -R;
-
-
-            //TODO: Try to use rotation matrix?
-            // first-order Runge-Kutta use to update the q....
-            Eigen::Vector4d tmp_q(q.x(),q.y(),q.z(),q.w());
-            tmp_q = (cos(v / 2.0) * Eigen::Matrix4d::Identity() +
-                     2.0 / v * sin(v / 2.0) * OMEGA) * (tmp_q);
-//            quaterniond_ = Eigen::Quaterniond()
-            quaterniond_.x() = tmp_q(0);
-            quaterniond_.y() = tmp_q(1);
-            quaterniond_.z() = tmp_q(2);
-            quaterniond_.w() = tmp_q(3);
-
-            quaterniond_.normalize();
-//            quat_ /= quat_(3);
+            y(6) = SO3_rotation_.log()(0);
+            y(7) = SO3_rotation_.log()(1);
+            y(8) = SO3_rotation_.log()(2);
 
 
         } else {
             /*
              * Need not do any thing.
              */
-            quaterniond_ = q;
+//            quaterniond_ = q;
         }
 
         //---------------
         Eigen::Vector3d g_t(0, 0, 9.81);
 //        g_t = g_t.transpose();
 
-        Eigen::Matrix3d Rb2t =quaterniond_.toRotationMatrix();
+        Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
         Eigen::MatrixXd f_t(Rb2t * (u.block(0, 0, 3, 1)));
 
-        Eigen::Vector3d acc_t(f_t + g_t);
+        Eigen::Vector3d acc_t(f_t - g_t);
 
         Eigen::MatrixXd A, B;
 
         A.resize(6, 6);
         A.setIdentity();
-//        MYCHECK(1);
-//        std::cout << A.rows() << " x " << A.cols() << std::endl;
+
         A(0, 3) = dt;
         A(1, 4) = dt;
         A(2, 5) = dt;
@@ -189,10 +150,8 @@ public:
         B.block(3, 0, 3, 3) = Eigen::Matrix3d::Identity() * dt;
 
 //        MYCHECK(1);
-        y.block(0, 0, 6, 1) = A * (x_h.block(0, 0, 6, 1)) +
+        y.block(0, 0, 6, 1) = A * ( x_h.block(0, 0, 6, 1)) +
                               B * acc_t;
-//        MYCHECK(1);
-
 
         x_h_ = y;
 //        MYCHECK(1);
@@ -206,12 +165,11 @@ public:
     * @param dt
     * @return
     */
-    bool StateMatrix(Eigen::Quaterniond q, Eigen::VectorXd u, double dt) {
+    bool StateMatrix(Eigen::VectorXd u, double dt) {
 
 //        MYCHECK(1);
 
-        Eigen::Matrix3d Rb2t = q.toRotationMatrix();
-        Eigen::Translation3d R;
+        Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
 
 
         Eigen::Vector3d f_t(Rb2t * (u.block(0, 0, 3, 1)));
@@ -263,36 +221,21 @@ public:
      * @return
      */
     Eigen::VectorXd ComputeInternalState(Eigen::VectorXd x_in,
-                                         Eigen::VectorXd dx,
-                                         Eigen::Quaterniond q_in) {
+                                         Eigen::VectorXd dx) {
 
-//        MYCHECK(1);
 
-        Eigen::Matrix3d R = q_in.toRotationMatrix();
 
         Eigen::VectorXd x_out = x_in + dx;
 
         Eigen::Vector3d epsilon(dx.block(6, 0, 3, 1));
 
-        Eigen::Matrix3d OMEGA;
-        OMEGA.setZero();
 
-        OMEGA(0, 1) = -epsilon(2);
-        OMEGA(0, 2) = epsilon(1);
+        SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
 
-        OMEGA(1, 0) = epsilon(2);
-        OMEGA(1, 2) = -epsilon(0);
+        x_out(6)= SO3_rotation_.log()(0);
+        x_out(7) = SO3_rotation_.log()(1);
+        x_out(8) = SO3_rotation_.log()(2);
 
-        OMEGA(2, 0) = -epsilon(1);
-        OMEGA(2, 1) = epsilon(0);
-
-
-        R = (Eigen::Matrix3d::Identity() - OMEGA) * (R);
-
-
-        Eigen::AngleAxisd aa;
-        aa = Eigen::Matrix3d(R);
-        quaterniond_ = aa;
 
         return x_out;
 
@@ -301,18 +244,17 @@ public:
     Eigen::VectorXd GetPosition(Eigen::VectorXd u, double zupt1) {
 
 
-        x_h_ = NavigationEquation(x_h_, u, quaterniond_, para_.Ts_);
-        StateMatrix(quaterniond_, u, para_.Ts_);
+        x_h_ = NavigationEquation(x_h_, u, para_.Ts_);
+
+        StateMatrix( u, para_.Ts_);
 
         P_ = (F_ * (P_)) * (F_.transpose().eval()) +
              (G_ * Q_ * G_.transpose().eval());
         if (zupt1 > 0.5) {
             Eigen::Vector3d z(-x_h_.block(3, 0, 3, 1));
 
-
             Eigen::MatrixXd K;
             K = P_ * H_.transpose().eval() * (H_ * P_ * H_.transpose().eval() + R_).inverse();
-//            K = P_ * H_.transpose() * R_.inverse();
 
             Eigen::VectorXd dx = K * z;
             dx_ = dx;
@@ -322,13 +264,12 @@ public:
             Id.setIdentity();
 
             P_ = (Id - K * H_) * P_;
-//            P_ = (Id-K_*H_)*P_*(Id-K_*H_).transpose() + K_ * R_ * K_.transpose();
 
-            x_h_ = ComputeInternalState(x_h_, dx, quaterniond_);
+            x_h_ = ComputeInternalState(x_h_, dx);
         }
 
 
-        P_ = (P_ + P_.transpose()) * 0.5;
+        P_ = (P_*0.5 + P_.transpose().eval()*0.5);
 
 
 
@@ -360,9 +301,12 @@ private:
     Eigen::MatrixXd K_;
 
 
-    Eigen::Vector4d quat_;
 
-    Eigen::Quaterniond quaterniond_;
+//    Eigen::Vector4d quat_;
+
+//    Eigen::Quaterniond quaterniond_;
+
+    Sophus::SO3 SO3_rotation_;
 
     Eigen::MatrixXd dx_;
 

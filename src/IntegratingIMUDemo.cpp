@@ -23,7 +23,7 @@
 
 
 int main() {
-    std::string dir_name = "/home/steve/Code/Mini-IMU/Scripts/IMUWB/34/";
+    std::string dir_name = "/home/steve/Code/Mini-IMU/Scripts/IMUWB/32/";
 
     CppExtent::CSVReader imuReader(dir_name + "imu.txt");
     CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
@@ -65,18 +65,18 @@ int main() {
 //    init_para.init_heading1_ = 0.0 + 20 / 180.0 * M_PI;
     init_para.init_heading1_ = -2.0;//M_PI / 2.0;
 
-    init_para.sigma_a_ *= 1.0;
+    init_para.sigma_a_ *= 5.0;
 
-    init_para.sigma_g_ *= 1.0;
+    init_para.sigma_g_ *= 5.0;
 
-    init_para.sigma_acc_ *=1.0;
-    init_para.sigma_gyro_ *=1.0;
+    init_para.sigma_acc_ *=6.0;
+    init_para.sigma_gyro_ *=6.0;
 
     init_para.Ts_ = 0.005f;//1.0/ 200.0;
 
     EKFEigen myekf(init_para);
 
-    myekf.InitNavEq(imu_data.block(0, 1, 50, 6));
+    myekf.InitNavEq(imu_data.block(0, 1, 10, 6));
 
     for (int i(0); i < imu_data.rows(); ++i) {
 //        if(i>1)
@@ -89,9 +89,9 @@ int main() {
                                                 zupt_data(i, 0));
 //        std::cout << imu_data.block(i,1,1,6) << std::endl;
 
-//        if (i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i - 1, 0) < 0.5) {
+        if (i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i - 1, 0) < 0.5) {
             out_file << vec(0) << " " << vec(1) << " " << vec(2) << std::endl;
-//        }
+        }
     }
 
 
