@@ -129,7 +129,7 @@ public:
         Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
         Eigen::MatrixXd f_t(Rb2t * (u.block(0, 0, 3, 1)));
 
-        Eigen::Vector3d acc_t(f_t - g_t);
+        Eigen::Vector3d acc_t(f_t + g_t);
 
         Eigen::MatrixXd A, B;
 
