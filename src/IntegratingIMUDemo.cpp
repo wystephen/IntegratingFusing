@@ -19,6 +19,7 @@
 #include "MYEKF.h"
 #include "EKF.hpp"
 #include "SettingPara.h"
+#include "EKFEigen.h"
 
 
 int main() {
@@ -62,20 +63,20 @@ int main() {
 
     init_para.init_pos1_ = Eigen::Vector3d(0.0, 0.0, 0.0);
 //    init_para.init_heading1_ = 0.0 + 20 / 180.0 * M_PI;
-    init_para.init_heading1_ = M_PI / 2.0;
+    init_para.init_heading1_ = -2.0;//M_PI / 2.0;
 
-    init_para.sigma_a_ *= 6.0;
+    init_para.sigma_a_ *= 1.0;
 
-    init_para.sigma_g_ *= 6.0;
+    init_para.sigma_g_ *= 1.0;
 
-    init_para.sigma_acc_ *=8.0;
-    init_para.sigma_gyro_ *=8.0;
+    init_para.sigma_acc_ *=1.0;
+    init_para.sigma_gyro_ *=1.0;
 
-    init_para.Ts_ = 1.0/ 200.0;
+    init_para.Ts_ = 0.005f;//1.0/ 200.0;
 
-    MyEkf myekf(init_para);
+    EKFEigen myekf(init_para);
 
-    myekf.InitNavEq(imu_data.block(0, 1, 20, 6));
+    myekf.InitNavEq(imu_data.block(0, 1, 50, 6));
 
     for (int i(0); i < imu_data.rows(); ++i) {
 //        if(i>1)
@@ -86,11 +87,11 @@ int main() {
 //        std::cout << init_para.Ts_ << std::endl;
         Eigen::VectorXd vec = myekf.GetPosition(imu_data.block(i, 1, 1, 6).transpose(),
                                                 zupt_data(i, 0));
-        std::cout << imu_data.block(i,1,1,6) << std::endl;
+//        std::cout << imu_data.block(i,1,1,6) << std::endl;
 
-        if (i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i - 1, 0) < 0.5) {
+//        if (i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i - 1, 0) < 0.5) {
             out_file << vec(0) << " " << vec(1) << " " << vec(2) << std::endl;
-        }
+//        }
     }
 
 

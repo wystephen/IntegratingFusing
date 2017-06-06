@@ -16,6 +16,11 @@
 
 class MyEkf {
 public:
+
+    /**
+     *
+     * @param para
+     */
     MyEkf(SettingPara para) {
 //        MYCHECK(1);
 
@@ -216,7 +221,7 @@ public:
 
         try {
             // 1e-3  ==>>>  fabs(T) != 0
-            if (fabs(T) > 1e-8) {
+            if (fabs(T) > 1e-3) {
                 S = 0.5 / sqrt(fabs(T));
 
                 qw = 0.25 / S;
@@ -240,7 +245,6 @@ public:
                     qy = 0.25 * S;
                     qz = (R(1, 2) + R(2, 1)) / S;
                 } else {
-
                     S = sqrt(1 + R(2, 2) - R(0, 0) - R(1, 1)) * 2.0;
 
                     qw = (R(1, 0) - R(0, 1)) / S;
@@ -383,7 +387,7 @@ public:
 //        MYCHECK(1);
 
         //---------------
-        Eigen::Vector3d g_t(0, 0, 9.8173);
+        Eigen::Vector3d g_t(0, 0, 9.81);
 //        g_t = g_t.transpose();
 
         Eigen::Matrix3d Rb2t(q2dcm(quat_));
@@ -421,6 +425,13 @@ public:
         return y;
     }
 
+    /**
+     *
+     * @param q
+     * @param u
+     * @param dt
+     * @return
+     */
     bool StateMatrix(Eigen::Vector4d q, Eigen::VectorXd u, double dt) {
 
 //        MYCHECK(1);
@@ -468,6 +479,13 @@ public:
     }
 
 
+    /**
+     * Plus the error of obvious into the state.
+     * @param x_in current state in prior
+     * @param dx
+     * @param q_in current quantanien
+     * @return
+     */
     Eigen::VectorXd ComputeInternalState(Eigen::VectorXd x_in,
                                          Eigen::VectorXd dx,
                                          Eigen::VectorXd q_in) {
@@ -539,7 +557,7 @@ public:
 
 
 //        P_ = (P_.eval() * 0.5 + P_.transpose().eval() * 0.5);
-        P_ = (P_ + P_.transpose()) /2.0;
+        P_ = (P_ + P_.transpose()) * 0.5;
 
 
         /**
@@ -587,6 +605,10 @@ public:
         return x_h_;
     }
 
+    /**
+     *
+     * @return  angular in x-o-y plane,( unite is degree ).
+     */
     double getOriente() {
 //        Eigen::Vector2d avg_vec = std::partial_sum(heading_vec_deque_.begin(),
 //                                                   heading_vec_deque_.end(),
@@ -634,19 +656,10 @@ public:
         return avg_velocity / double(velocity_deque_.size());
     }
 
+
     /**
-     *
-     * @return
+     * @return The transform matrix at current moment.
      */
-//    double getDeltaVelocity(){
-//
-//        if(velocity_deque_.size()>5)
-//        {
-//
-//        }
-//
-//       return 0.0;
-//    }
     Eigen::Isometry3d getTransformation()
     {
         Eigen::Isometry3d transform = (Eigen::Isometry3d::Identity());
