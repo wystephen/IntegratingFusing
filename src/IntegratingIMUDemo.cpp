@@ -22,7 +22,7 @@
 
 
 int main() {
-    std::string dir_name = "/home/steve/tmp/test/51/";
+    std::string dir_name = "/home/steve/Code/Mini-IMU/Scripts/IMUWB/34/";
 
     CppExtent::CSVReader imuReader(dir_name + "imu.txt");
     CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
@@ -64,12 +64,12 @@ int main() {
 //    init_para.init_heading1_ = 0.0 + 20 / 180.0 * M_PI;
     init_para.init_heading1_ = M_PI / 2.0;
 
-//    init_para.sigma_a_ *= 6.0;
-//
-//    init_para.sigma_g_ *= 6.0;
-//
-//    init_para.sigma_acc_ *=8.0;
-//    init_para.sigma_gyro_ *=8.0;
+    init_para.sigma_a_ *= 6.0;
+
+    init_para.sigma_g_ *= 6.0;
+
+    init_para.sigma_acc_ *=8.0;
+    init_para.sigma_gyro_ *=8.0;
 
     init_para.Ts_ = 1.0/ 200.0;
 
@@ -80,7 +80,7 @@ int main() {
     for (int i(0); i < imu_data.rows(); ++i) {
 //        if(i>1)
 //        {
-//            init_para.Ts_ = imu_data(i,0)-imu_data(i-1,0);
+//            myekf.para_.Ts_ = imu_data(i,0)-imu_data(i-1,0);
 //        }
 
 //        std::cout << init_para.Ts_ << std::endl;

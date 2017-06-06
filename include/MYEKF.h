@@ -674,10 +674,12 @@ public:
         return transform;
     }
 
-
-private:
+public:
     //Parameters in here.
     SettingPara para_;
+private:
+
+
 
     //P for single foot
     Eigen::Matrix<double, 9, 9> P_;
