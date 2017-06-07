@@ -46,6 +46,7 @@ int main() {
                 imu_data(i, j) *= (M_PI / 180.0);
             }
         }
+        
         zupt_data(i, 0) = *(zuptM(i, 0));
     }
 
