@@ -4,7 +4,7 @@ project(IntegratingFusing)
 set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_BUILD_TOOL Release)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O4 -msse2 -msse3 -msse4 -lopencv_aruco -lpthread ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -msse2 -msse3 -msse4 -lopencv_aruco -lpthread -lSophus ")
 #set(CUDA_NVCC_FLAGSS ${CUDA_NVCC_FLAGS} --gpu-architecture sm_20)
 
 
@@ -17,6 +17,10 @@ find_package(Eigen3 REQUIRED)
 find_package(PythonLibs 2.7 REQUIRED)
 
 find_package(Sophus REQUIRED)
+if(SOPHUS_FOUND)
+    message("Sophus_FOUND")
+endif()
+
 
 find_package(OpenMP)
 find_package(BLAS)
@@ -24,7 +28,7 @@ find_package(LAPACK)
 
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
-
+message(${CMAKE_MODULE_PATH})
 # G2O
 SET(G2O_ROOT /usr/local/include/g2o)
 FIND_PACKAGE(G2O)
@@ -58,9 +62,9 @@ include_directories(
 )
 
 link_directories(
-        /usr/local/lib
-        /usr/lib
-        /usr/lib/x86_64-linux-gnu
+        /usr/local/lib/
+        /usr/lib/
+        /usr/lib/x86_64-linux-gnu/
         ${BLAS_LIBRARIES}
         ${LAPACK_LIBRARIES}
         ./include
@@ -75,9 +79,9 @@ SET(G2O_LIBS g2o_cli g2o_ext_freeglut_minimal g2o_simulator
         g2o_types_data g2o_types_sim3 cxsparse
         g2o_types_slam3d_addons)
 
-
+set(Sophus_LIBRARIES libSophus.so)
 add_executable(IntegratingIMU src/IntegratingIMUDemo.cpp)
-target_link_libraries(IntegratingIMU ${Sophus_LIBRARIES}  ${G2O_LIBS} ${CSPARSE_LIBRARY} ${PYTHON_LIBRARIES} )
+target_link_libraries(IntegratingIMU ${Sophus_LIBRARIES} ${Sophus_LIBRARIES} ${G2O_LIBS} ${CSPARSE_LIBRARY} ${PYTHON_LIBRARIES} )
 #
 ## For test
 #
