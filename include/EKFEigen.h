@@ -108,7 +108,7 @@ public:
 
         if (fabs(w_tb.norm()) > 1e-8) {
 
-            SO3_rotation_ = Sophus::SO3::exp(-(w_tb)*dt)*SO3_rotation_;
+            SO3_rotation_ = Sophus::SO3::exp((w_tb)*dt)*SO3_rotation_;
 //            SO3_rotation_ =SO3_rotation_* Sophus::SO3::exp(-(w_tb)*dt);
 //            Eigen::Matrix3d tmp_matrx = SO3_rotation_.matrix();
 
