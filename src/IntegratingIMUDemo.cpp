@@ -42,13 +42,13 @@ int main() {
         for (int j(0); j < imuM.GetCols(); ++j) {
             imu_data(i, j) = *(imuM(i, j));
             if (0 < j < 4) {
-                imu_data(i, j) *= 9.81;//*9.81/9.2;
+                imu_data(i, j) *= 9.81;//*9.81/9.64877;
 //              if(j==3)
 //              {
 //                  imu_data(i,j) *= -1.0f;
 //              }
             } else if (4 <= j < 7) {
-                imu_data(i, j) *= (M_PI / 180.0);
+                imu_data(i, j) *= (3.1415926 / 180.0);
 //                if(j==6)
 //                {
 //                    imu_data(i,j) *= -1.0f;
@@ -73,20 +73,20 @@ int main() {
 
     init_para.init_pos1_ = Eigen::Vector3d(0.0, 0.0, 0.0);
 //    init_para.init_heading1_ = 0.0 + 20 / 180.0 * M_PI;
-    init_para.init_heading1_ = -2.0;//M_PI / 2.0;
+    init_para.init_heading1_ =0.0;// -2.0;//M_PI / 2.0;
 
-    init_para.sigma_a_ *= 1.0;
+    init_para.sigma_a_ *= 5.0;
 
-    init_para.sigma_g_ *= 1.0;
+    init_para.sigma_g_ *= 5.0;
 
-    init_para.sigma_acc_ *=1.0;
-    init_para.sigma_gyro_ *=1.0;
+    init_para.sigma_acc_ *=6.0;
+    init_para.sigma_gyro_ *=6.0;
 
     init_para.Ts_ = 0.005f;//1.0/ 200.0;
 
     EKFEigen myekf(init_para);
 
-    myekf.InitNavEq(imu_data.block(0, 1, 10, 6));
+    myekf.InitNavEq(imu_data.block(0, 1, 50, 6));
 
     for (int i(0); i < imu_data.rows(); ++i) {
 //        if(i>1)
@@ -97,7 +97,7 @@ int main() {
 //        std::cout << init_para.Ts_ << std::endl;
         Eigen::VectorXd vec = myekf.GetPosition(imu_data.block(i, 1, 1, 6).transpose(),
                                                 zupt_data(i, 0));
-        std::cout << imu_data.block(i,1,1,6) << std::endl;
+//        std::cout << imu_data.block(i,1,1,6) << std::endl;
 
         if (i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i - 1, 0) < 0.5) {
             out_file << vec(0) << " " << vec(1) << " " << vec(2) << std::endl;
