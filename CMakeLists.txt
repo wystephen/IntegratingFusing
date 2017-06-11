@@ -80,7 +80,7 @@ SET(G2O_LIBS g2o_cli g2o_ext_freeglut_minimal g2o_simulator
         g2o_types_slam3d_addons)
 
 set(Sophus_LIBRARIES libSophus.so)
-add_executable(IntegratingIMU src/IntegratingIMUDemo.cpp)
+add_executable(IntegratingIMU src/IntegratingIMUDemo.cpp include/EKFSimple.h)
 target_link_libraries(IntegratingIMU ${Sophus_LIBRARIES} ${Sophus_LIBRARIES} ${G2O_LIBS} ${CSPARSE_LIBRARY} ${PYTHON_LIBRARIES} )
 #
 ## For test
