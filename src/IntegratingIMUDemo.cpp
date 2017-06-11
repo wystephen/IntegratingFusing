@@ -42,9 +42,17 @@ int main() {
         for (int j(0); j < imuM.GetCols(); ++j) {
             imu_data(i, j) = *(imuM(i, j));
             if (0 < j < 4) {
-                imu_data(i, j) *= 9.81;
+                imu_data(i, j) *= 9.81;//*9.81/9.2;
+//              if(j==3)
+//              {
+//                  imu_data(i,j) *= -1.0f;
+//              }
             } else if (4 <= j < 7) {
                 imu_data(i, j) *= (M_PI / 180.0);
+//                if(j==6)
+//                {
+//                    imu_data(i,j) *= -1.0f;
+//                }
             }
         }
         
@@ -76,7 +84,7 @@ int main() {
 
     init_para.Ts_ = 0.005f;//1.0/ 200.0;
 
-    EKFSimple myekf(init_para);
+    EKFEigen myekf(init_para);
 
     myekf.InitNavEq(imu_data.block(0, 1, 10, 6));
 
