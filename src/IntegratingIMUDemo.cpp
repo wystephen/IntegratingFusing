@@ -40,7 +40,7 @@ int main() {
 
     for (int i(0); i < imuM.GetRows(); ++i) {
         for (int j(0); j < imuM.GetCols(); ++j) {
-            imu_data(i, j) = *(imuM(i, j));
+            imu_data(i, j) = double(*(imuM(i, j)));
             if (0 < j < 4) {
                 imu_data(i, j) *= 9.81;//*9.81/9.64877;
 //              if(j==3)
@@ -86,7 +86,7 @@ int main() {
 
     EKFEigen myekf(init_para);
 
-    myekf.InitNavEq(imu_data.block(0, 1, 50, 6));
+    myekf.InitNavEq(imu_data.block(0, 1, 20, 6));
 
     for (int i(0); i < imu_data.rows(); ++i) {
 //        if(i>1)

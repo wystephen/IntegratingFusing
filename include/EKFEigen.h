@@ -66,25 +66,32 @@ public:
         std::cout << __FILE__ << ":" << __LINE__ << ":" << "own g :" << own_g_ << std::endl;
 
 
+//        pitch = -asin(acc_s(1,1)/g);
+//        roll = atan(acc_s(2,1)/acc_s(3,1));
+        double roll(atan(f_v/f_w)), pitch(-asin(f_u/own_g_));
 
-        double roll(atan2(-f_v, -f_w)), pitch(atan2(-f_u, f_w));
+//        Eigen::Vector3d attitude(roll, pitch, para_.init_heading1_);
+//
+//        Eigen::Quaterniond q;
+//        Eigen::AngleAxisd ang(attitude.norm(),attitude);
+//        q = ang;
+        SO3_rotation_ = Sophus::SO3(roll,pitch,para_.init_heading1_);
 
-        Eigen::Vector3d attitude(-roll, -pitch, para_.init_heading1_);
-
-        Eigen::Quaterniond q;
-        Eigen::AngleAxisd ang(attitude.norm(),attitude);
-        q = ang;
-        SO3_rotation_ = Sophus::SO3(q);
-
+        Eigen::Vector3d attitude(SO3_rotation_.log()(0),
+        SO3_rotation_.log()(1),
+        SO3_rotation_.log()(2));
 
 
         Eigen::Vector3d tmp_acc(f_u,f_v,f_w);
         Eigen::Matrix3d tm = SO3_rotation_.matrix();
+        std::cout << tmp_acc.transpose() << std::endl;
         std::cout << roll/M_PI*180.0 << " --- " << pitch/M_PI*180.0 << std::endl;
         std::cout << tm << std::endl;
+        std::cout << "norm before:"<< tmp_acc.norm() << std::endl;
         tmp_acc = tm * tmp_acc;
         std::cout <<__FILE__<<__LINE__ << "acc:"<<std::endl <<
                                                 tmp_acc.transpose() << std::endl;
+        std::cout << "norm after :" << tmp_acc.norm() << std::endl;
 
 
         x_h_.block(0, 0, 3, 1) = para_.init_pos1_;
@@ -151,7 +158,7 @@ public:
         }
 
         //---------------
-        Eigen::Vector3d g_t(0, 0, 9.81);
+        Eigen::Vector3d g_t(0, 0, own_g_);//.81);
 //        g_t = g_t.transpose();
 
         Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
