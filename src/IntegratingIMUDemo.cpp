@@ -48,7 +48,7 @@ int main() {
 //                  imu_data(i,j) *= -1.0f;
 //              }
             } else if (4 <= j < 7) {
-                imu_data(i, j) *= (3.1415926 / 180.0);
+                imu_data(i, j) *= (180.0 / M_PI);
 //                if(j==6)
 //                {
 //                    imu_data(i,j) *= -1.0f;

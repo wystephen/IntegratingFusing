@@ -138,8 +138,9 @@ public:
         Eigen::Vector3d w_tb(u(3),u(4),u(5));
 
         if (fabs(w_tb.norm()) > 1e-18) {
+            w_tb *= dt;
 
-            SO3_rotation_ = Sophus::SO3::exp((w_tb)*dt)*SO3_rotation_;
+            SO3_rotation_ = Sophus::SO3::exp((w_tb))*SO3_rotation_;
 //            SO3_rotation_ =SO3_rotation_* Sophus::SO3::exp(-(w_tb)*dt);
 //            Eigen::Matrix3d tmp_matrx = SO3_rotation_.matrix();
 
