@@ -67,7 +67,7 @@ int main(int argc, char * argv[])
    // Define Camera Render Object (for view / scene browsing)
    pangolin::OpenGlRenderState s_cam(
            pangolin::ProjectionMatrix(640,480,420,420,320,240,0.1,1000),
-           pangolin::ModelViewLookAt(-0,0.5,-50, 0,0,0, pangolin::AxisY)
+           pangolin::ModelViewLookAt(-0,0.5,-90, 0,0,0, pangolin::AxisY)
    );
 
    const int UI_WIDTH = 180;
@@ -94,10 +94,30 @@ int main(int argc, char * argv[])
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         d_cam.Activate(s_cam);
 
+
+        double big_axis[]={0.0,0.0,0.0,
+                           100.0,0.0,0.0,
+                            0.0,100.0,0.0,
+        0.0,0.0,100.0};
+
+        drawAxis(big_axis);
+
         for(int i=0;i<axis_mat.GetRows();++i)
         {
             drawAxis(axis_mat(i,0));
         }
+
+        glColor3f(1.0,1.0,1.0);
+        glBegin(GL_LINES);
+
+        for(int i=0;i<axis_mat.GetRows()-1;++i)
+        {
+            glVertex3f(*axis_mat(i,0),*axis_mat(i,1),*axis_mat(i,2));
+            glVertex3f(*axis_mat(i+1,0),*axis_mat(i+1,1),*axis_mat(i+1,2));
+        }
+        glEnd();
+        glPopMatrix();
+
         pangolin::FinishFrame();
     }
 

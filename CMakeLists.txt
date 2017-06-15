@@ -115,6 +115,17 @@ target_link_libraries(
         ${G2O_LIBS} ${CSPARSE_LIBRARY}
         ${PYTHON_LIBRARIES}
 )
+add_executable(
+        TracePlotDynamic
+        src/TraceShowDynamic.cpp
+)
+target_link_libraries(
+        TracePlotDynamic
+        ${Pangolin_LIBRARIES}
+        ${Sophus_LIBRARIES} ${Sophus_LIBRARIES}
+        ${G2O_LIBS} ${CSPARSE_LIBRARY}
+        ${PYTHON_LIBRARIES}
+)
 #
 ## For test
 #
