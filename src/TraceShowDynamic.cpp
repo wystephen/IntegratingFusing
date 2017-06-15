@@ -46,6 +46,21 @@ inline bool drawAxis(double *p)
 
 
 }
+int whole_index(0);
+bool changed_by_key(false);
+
+void addIndex()
+{
+    changed_by_key = true;
+    whole_index ++;
+    return;
+}
+void reduceIndex()
+{
+    changed_by_key=true;
+    whole_index--;
+    return;
+}
 
 
 int main(int argc, char * argv[])
@@ -95,16 +110,48 @@ int main(int argc, char * argv[])
     CppExtent::Matrix<double> uwb_mat = outuwb.GetMatrix();
     CppExtent::Matrix<double> range_mat = outrange.GetMatrix();
 
-    int whole_index(0);
+
+
+    // Draw axis
+    pangolin::Var<int> a_step_num("ui.Log_scale var",1,1,axis_mat.GetRows(),false);
+    pangolin::Var<bool> can_play("ui.play_or_not",true,true);
+
+    pangolin::RegisterKeyPressCallback(pangolin::PANGO_CTRL + 'w',addIndex);
+    pangolin::RegisterKeyPressCallback(pangolin::PANGO_CTRL + 's',reduceIndex );
+
+
+
+
     double last_time = TimeStamp::now();
 
     while(!pangolin::ShouldQuit())
     {
-        if(TimeStamp::now()- last_time > 1.0)
+//        std::cout << a_double_log.Get() << std::endl;
+//        a_double_log.
+//        a_double_log= 100.0;
+        if(changed_by_key)
+        {
+            a_step_num = whole_index;
+            changed_by_key=false;
+        }
+
+        if(whole_index>axis_mat.GetRows()-1)
+        {
+            whole_index = axis_mat.GetRows()-1;
+        }
+
+        if(!can_play.Get())
+        {
+            whole_index = a_step_num;
+        }
+
+        if(TimeStamp::now()- last_time > 1.0 && can_play.Get())
         {
             if(whole_index < axis_mat.GetRows()-1)
             {
                 whole_index++;
+                a_step_num = whole_index;
+
 //            sleep(1);
 
             }
@@ -164,6 +211,7 @@ int main(int argc, char * argv[])
 
 //                    glBegin(GL_C);
 //                    glBegin(GL_C)
+                    glBegin(GL_LINES);
                     glColor3f(1.0,1.0,0.0);
                     glVertex3f(*uwb_mat(j,0),*uwb_mat(j,1),*uwb_mat(j,2));
                     glVertex3f(*uwb_mat(j,0)+tmp_vec(0),
