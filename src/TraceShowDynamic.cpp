@@ -79,14 +79,14 @@ int main(int argc, char * argv[])
     pangolin::ParseVarsFile("app.cfg");
 
     // Create OpenGL window in single line
-    pangolin::CreateWindowAndBind("Main",640,480);
+    pangolin::CreateWindowAndBind("Main",1024,768);
 
     // 3D Mouse handler requires depth testing to be enabled
     glEnable(GL_DEPTH_TEST);
 
     // Define Camera Render Object (for view / scene browsing)
     pangolin::OpenGlRenderState s_cam(
-            pangolin::ProjectionMatrix(640,480,420,420,320,240,0.1,1000),
+            pangolin::ProjectionMatrix(1024,768,420,420,320,240,0.1,1000),
             pangolin::ModelViewLookAt(-0,0.5,-90, 0,0,0, pangolin::AxisY)
     );
 
@@ -135,14 +135,15 @@ int main(int argc, char * argv[])
             changed_by_key=false;
         }
 
-        if(whole_index>axis_mat.GetRows()-1)
-        {
-            whole_index = axis_mat.GetRows()-1;
-        }
+
 
         if(!can_play.Get())
         {
             whole_index = a_step_num;
+        }
+        if(whole_index>axis_mat.GetRows()-1)
+        {
+            whole_index = axis_mat.GetRows()-1;
         }
 
         if(TimeStamp::now()- last_time > 1.0 && can_play.Get())
@@ -189,7 +190,7 @@ int main(int argc, char * argv[])
 
 
         // Range
-        for(int i=whole_index-3;i<whole_index;++i)
+        for(int i=whole_index-1;i<whole_index;++i)
         {
             if(i<0)
             {
