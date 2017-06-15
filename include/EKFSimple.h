@@ -323,6 +323,37 @@ public:
         return x_h_;
     }
 
+    Eigen::VectorXd OutputAxis()
+    {
+
+        Eigen::VectorXd axis_vec(12);
+        // center point
+        for(int i(0);i<3;++i)
+        {
+            axis_vec(i) = x_h_(i);
+        }
+
+        Eigen::Matrix3d rt = rotation_matrix_;
+        // offset of each axis
+        for(int i(0);i<3;++i)
+        {
+           Eigen::Vector3d at;
+            at.setZero();
+            at(i) = 1.0;
+
+            at = rotation_matrix_*at;
+            for(int j(0);j<3;++j)
+            {
+                axis_vec(2+i*3+j) = at(j);
+            }
+
+        }
+
+        return axis_vec;
+
+
+    }
+
 
 public:
     //Parameters in here.
