@@ -137,32 +137,21 @@ public:
 
         Eigen::Vector3d w_tb(u(3),u(4),u(5));
 
-        if (fabs(w_tb.norm()) > 1e-18) {
-            w_tb *= dt;
+            w_tb *= -dt;
 
             SO3_rotation_ = Sophus::SO3::exp((w_tb))*SO3_rotation_;
-//            SO3_rotation_ =SO3_rotation_* Sophus::SO3::exp(-(w_tb)*dt);
-//            Eigen::Matrix3d tmp_matrx = SO3_rotation_.matrix();
-
-
+//        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
 
             y(6) = SO3_rotation_.log()(0);
             y(7) = SO3_rotation_.log()(1);
             y(8) = SO3_rotation_.log()(2);
 
-
-        } else {
-            /*
-             * Need not do any thing.
-             */
-//            quaterniond_ = q;
-        }
-
         //---------------
-        Eigen::Vector3d g_t(0, 0, own_g_);//.81);
+        Eigen::Vector3d g_t(0, 0, 9.81);//.81);
 //        g_t = g_t.transpose();
 
         Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
+        std::cout << "Rt2t:" << Rb2t << std::endl;
         Eigen::MatrixXd f_t(Rb2t * (u.block(0, 0, 3, 1)));
 
         Eigen::Vector3d acc_t(f_t + g_t);
@@ -266,9 +255,9 @@ public:
         Eigen::Vector3d epsilon(dx.block(6, 0, 3, 1));
 
 
-//        SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
+        SO3_rotation_ = Sophus::SO3::exp(-epsilon) * SO3_rotation_;
 
-        SO3_rotation_ =   SO3_rotation_ * Sophus::SO3::exp(epsilon);
+//        SO3_rotation_ =   SO3_rotation_ * Sophus::SO3::exp(epsilon);
         x_out(6)= SO3_rotation_.log()(0);
         x_out(7) = SO3_rotation_.log()(1);
         x_out(8) = SO3_rotation_.log()(2);

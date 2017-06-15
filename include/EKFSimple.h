@@ -55,8 +55,21 @@ public:
         f_v = u.col(1).mean();
         f_w = u.col(2).mean();
 
+        double t_norm= 0.0;
+        for(int i(0);i<u.rows();++i)
+        {
+            t_norm += u.block(i,0,1,3).norm();
+        }
 
-        double roll(atan2(-f_v, -f_w)), pitch(atan2(f_u, sqrt(f_v * f_v + f_w * f_w)));
+        t_norm /= u.rows();
+        double roll(atan(f_v/f_w)), pitch(-asin(f_u/t_norm));
+
+//        Eigen::Vector3d attitude(roll, pitch, para_.init_heading1_);
+//
+//        Eigen::Quaterniond q;
+//        Eigen::AngleAxisd ang(attitude.norm(),attitude);
+//        q = ang;
+//        Sophus::SO3  = Sophus::SO3(roll,pitch,para_.init_heading1_);
 
         Eigen::Vector3d attitude(roll, pitch, para_.init_heading1_);
 
@@ -125,7 +138,8 @@ public:
             ang_rate_matrix(2,0) = -w_tb(1);
             ang_rate_matrix(2,1) = w_tb(0);
 
-            rotation_matrix_ = rotation_matrix_ * (2*Eigen::Matrix3d::Identity() + (ang_rate_matrix*dt)) * (2*Eigen::Matrix3d::Identity()-(ang_rate_matrix*dt)).inverse();
+            rotation_matrix_ = rotation_matrix_ * (2*Eigen::Matrix3d::Identity() + (ang_rate_matrix*dt))
+                               * (2*Eigen::Matrix3d::Identity()-(ang_rate_matrix*dt)).inverse();
 
 
 

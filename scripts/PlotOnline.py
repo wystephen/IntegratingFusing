@@ -17,7 +17,7 @@ class RealTimePlot:
         self.ax = p3.Axes3D(self.fig)
 
         self.data = np.loadtxt(self.file_name)
-        self.ax.plot(self.data[:,0],self.data[:,1],self.data[:,2])
+        self.ax.plot(self.data[:,0],self.data[:,1],self.data[:,2],'*r-')
 
     def start(self):
         line_ani = animation.FuncAnimation(
