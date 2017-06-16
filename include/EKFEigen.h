@@ -137,14 +137,18 @@ public:
 
         Eigen::Vector3d w_tb(u(3),u(4),u(5));
 
-            w_tb *= -dt;
+            w_tb *= dt;
 
-            SO3_rotation_ = Sophus::SO3::exp((w_tb))*SO3_rotation_;
-//        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
+//            SO3_rotation_ = Sophus::SO3::exp((w_tb))*SO3_rotation_;
 
-            y(6) = SO3_rotation_.log()(0);
-            y(7) = SO3_rotation_.log()(1);
-            y(8) = SO3_rotation_.log()(2);
+
+
+        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
+
+//            y(6) = SO3_rotation_.log()(0);
+//            y(7) = SO3_rotation_.log()(1);
+//            y(8) = SO3_rotation_.log()(2);
+
 
         //---------------
         Eigen::Vector3d g_t(0, 0, 9.81);//.81);

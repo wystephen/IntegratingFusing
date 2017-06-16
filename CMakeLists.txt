@@ -84,7 +84,7 @@ link_directories(
         /usr/lib/x86_64-linux-gnu/
         ${BLAS_LIBRARIES}
         ${LAPACK_LIBRARIES}
-        ./include
+#        ./include
 )
 
 
@@ -97,7 +97,10 @@ SET(G2O_LIBS g2o_cli g2o_ext_freeglut_minimal g2o_simulator
         g2o_types_slam3d_addons)
 
 set(Sophus_LIBRARIES libSophus.so)
-add_executable(IntegratingIMU src/IntegratingIMUDemo.cpp include/EKFSimple.h src/TracePlot3d.cpp)
+
+
+
+add_executable(IntegratingIMU src/IntegratingIMUDemo.cpp )
 target_link_libraries(IntegratingIMU
         ${Pangolin_LIBRARIES}
         ${Sophus_LIBRARIES} ${Sophus_LIBRARIES}
