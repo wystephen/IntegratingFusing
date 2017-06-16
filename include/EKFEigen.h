@@ -70,9 +70,10 @@ public:
 //        roll = atan(acc_s(2,1)/acc_s(3,1));
         double roll(atan(f_v/(f_w))), pitch(-asin(f_u/(own_g_)));
 
-        
+
 
         SO3_rotation_ = Sophus::SO3(roll,pitch,para_.init_heading1_);
+//        SO3_rotation_ = SO3_rotation_.matrix().transpose();
 //        SO3_rotation_ = SO3_rotation_.inverse();
 
         Eigen::Vector3d attitude(SO3_rotation_.log()(0),
@@ -82,6 +83,7 @@ public:
 
         Eigen::Vector3d tmp_acc(f_u,f_v,f_w);
         Eigen::Matrix3d tm = SO3_rotation_.matrix();
+        tm = tm.transpose().eval();
         std::cout << tmp_acc.transpose() << std::endl;
         std::cout << roll/M_PI*180.0 << " --- " << pitch/M_PI*180.0 << std::endl;
         std::cout << tm << std::endl;
