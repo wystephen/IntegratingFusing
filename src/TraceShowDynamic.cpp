@@ -17,6 +17,9 @@
 
 #include <time_stamp.h>
 
+#include <pangolin/gl/glglut.h>
+
+
 inline bool drawAxis(double *p)
 {
     glLineWidth(2);
@@ -207,25 +210,29 @@ int main(int argc, char * argv[])
                     tmp_vec = tmp_vec / tmp_vec.norm() * (*range_mat(i,j));
 //                    std::cout<< "tmp vec range :" << tmp_vec.norm() << ",";
 
-                    glLineWidth(1.0);
+                    glLineWidth(3.0);
 
 
-//                    glBegin(GL_C);
-//                    glBegin(GL_C)
+
                     glBegin(GL_LINES);
                     glColor3f(1.0,1.0,0.0);
                     glVertex3f(*uwb_mat(j,0),*uwb_mat(j,1),*uwb_mat(j,2));
                     glVertex3f(*uwb_mat(j,0)+tmp_vec(0),
                     *uwb_mat(j,1)+tmp_vec(1),
                     *uwb_mat(j,2) +tmp_vec(2));
-//                    std::cout <<*uwb_mat(j,0)<<","<<*uwb_mat(j,1)<<","<<*uwb_mat(j,2)<<",";
-//                    std::cout << *uwb_mat(j,0)+tmp_vec(0)<<","<<
-//                            *uwb_mat(j,1)+tmp_vec(1)<<","<<
-//                            *uwb_mat(j,2) +tmp_vec(2);
                     glEnd();
                     glPopMatrix();
 
-//                    std::cout << "draw range" << std::endl;
+                    glPushMatrix();
+                    glColor4f(0.8,0.2,0.8,0.1);
+                    glTranslated(*uwb_mat(j,0),*uwb_mat(j,1),*uwb_mat(j,2));
+                    GLUquadricObj *quadricObj = gluNewQuadric();
+                    gluQuadricDrawStyle(quadricObj, GLU_POINT);
+                    gluSphere(quadricObj, *range_mat(i,j), 260000, 260000);
+                    glPopMatrix();
+
+
+
 
                 }
             }
