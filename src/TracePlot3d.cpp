@@ -49,7 +49,8 @@ inline bool drawAxis(double *p)
 int main(int argc, char * argv[])
 {
 
-   std::string axis_file("/home/steve/Code/QuickFusing/ResultData/axis.txt");
+//   std::string axis_file("/home/steve/Code/QuickFusing/ResultData/axis.txt");
+    std::string axis_file("./ResultData/out_axis.txt");
    if(argc ==0 )
    {
        std::cout << "use default parameter" << std::endl;
