@@ -284,10 +284,10 @@ public:
         ang_rate_matrix(2,1) = w_tb(0);
 
 //        rotation_matrix_ = (2*Eigen::Matrix3d::Identity()+ang_rate_matrix)*(2*Eigen::Matrix3d::Identity()-ang_rate_matrix).inverse() * rotation_matrix_;
-        rotation_matrix_ = (
+        rotation_matrix_ =rotation_matrix_* (
                 Eigen::Matrix3d::Identity() + std::sin(w_tb.norm())/w_tb.norm()*ang_rate_matrix
                 + (1-cos(w_tb.norm()))/w_tb.norm()/w_tb.norm()*ang_rate_matrix*ang_rate_matrix
-        ) * rotation_matrix_;
+        ) ;
 //
 //        SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
 //

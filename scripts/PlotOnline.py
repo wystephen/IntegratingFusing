@@ -32,7 +32,7 @@ class RealTimePlot:
             self.data = np.loadtxt(self.file_name)
             self.ax.clear()
 
-            self.ax.plot(self.data[:,0],self.data[:,1],self.data[:,2])
+            self.ax.plot(self.data[:,0],self.data[:,1],self.data[:,2],'-*')
 
 if __name__ == '__main__':
     file_name = '../ResultData/out_result.txt'

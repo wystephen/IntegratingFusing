@@ -68,14 +68,12 @@ public:
 
 //        pitch = -asin(acc_s(1,1)/g);
 //        roll = atan(acc_s(2,1)/acc_s(3,1));
-        double roll(atan(f_v/f_w)), pitch(-asin(f_u/own_g_));
+        double roll(atan(f_v/(f_w))), pitch(-asin(f_u/(own_g_)));
 
-//        Eigen::Vector3d attitude(roll, pitch, para_.init_heading1_);
-//
-//        Eigen::Quaterniond q;
-//        Eigen::AngleAxisd ang(attitude.norm(),attitude);
-//        q = ang;
+        
+
         SO3_rotation_ = Sophus::SO3(roll,pitch,para_.init_heading1_);
+//        SO3_rotation_ = SO3_rotation_.inverse();
 
         Eigen::Vector3d attitude(SO3_rotation_.log()(0),
         SO3_rotation_.log()(1),
@@ -137,25 +135,20 @@ public:
 
         Eigen::Vector3d w_tb(u(3),u(4),u(5));
 
-            w_tb *= dt;
+        w_tb *= dt;
 
-//            SO3_rotation_ = Sophus::SO3::exp((w_tb))*SO3_rotation_;
 
 
 
         SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
 
-//            y(6) = SO3_rotation_.log()(0);
-//            y(7) = SO3_rotation_.log()(1);
-//            y(8) = SO3_rotation_.log()(2);
 
 
         //---------------
         Eigen::Vector3d g_t(0, 0, 9.81);//.81);
-//        g_t = g_t.transpose();
 
         Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
-        std::cout << "Rt2t:" << Rb2t << std::endl;
+//        std::cout << "Rt2t:" << Rb2t << std::endl;
         Eigen::MatrixXd f_t(Rb2t * (u.block(0, 0, 3, 1)));
 
         Eigen::Vector3d acc_t(f_t + g_t);
@@ -259,12 +252,12 @@ public:
         Eigen::Vector3d epsilon(dx.block(6, 0, 3, 1));
 
 
-        SO3_rotation_ = Sophus::SO3::exp(-epsilon) * SO3_rotation_;
+        SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
 
 //        SO3_rotation_ =   SO3_rotation_ * Sophus::SO3::exp(epsilon);
-        x_out(6)= SO3_rotation_.log()(0);
-        x_out(7) = SO3_rotation_.log()(1);
-        x_out(8) = SO3_rotation_.log()(2);
+//        x_out(6)= SO3_rotation_.log()(0);
+//        x_out(7) = SO3_rotation_.log()(1);
+//        x_out(8) = SO3_rotation_.log()(2);
 
 
         return x_out;
