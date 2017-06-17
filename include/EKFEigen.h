@@ -72,7 +72,7 @@ public:
 
 
 
-        SO3_rotation_ = Sophus::SO3(roll,pitch,para_.init_heading1_);
+        SO3_rotation_ = Sophus::SO3(M_PI-roll,M_PI-pitch,para_.init_heading1_);
 //        SO3_rotation_ = SO3_rotation_.matrix().transpose();
 //        SO3_rotation_ = SO3_rotation_.inverse();
 
