@@ -67,8 +67,8 @@ public:
         own_g_ = t_norm;
         std::cout << __FILE__ << ":" << __LINE__ << ":" << "own g :" << own_g_ << std::endl;
 
-        double roll(std::atan2(-f_v,std::sqrt(f_v*f_v+f_u*f_u))),
-                pitch(std::atan2(f_u,std::sqrt(f_v*f_v+f_w*f_w)));
+        double roll(std::atan2(f_v,-std::sqrt(f_w*f_w+f_u*f_u))),
+                pitch(std::atan2(f_u,-std::sqrt(f_v*f_v+f_w*f_w)));
         SO3_rotation_ = Sophus::SO3(roll,pitch,0.0);
 
         Eigen::Vector3d tmp_acc(f_u,f_v,f_w);

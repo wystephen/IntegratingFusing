@@ -129,6 +129,21 @@ target_link_libraries(
         ${G2O_LIBS} ${CSPARSE_LIBRARY}
         ${PYTHON_LIBRARIES}
 )
+
+
+add_executable(
+        AxisTestForSophus
+        src/AxisTestForSophus.cpp
+)
+
+target_link_libraries(
+        AxisTestForSophus
+         ${Pangolin_LIBRARIES}
+        ${Sophus_LIBRARIES} ${Sophus_LIBRARIES}
+        ${G2O_LIBS} ${CSPARSE_LIBRARY}
+        ${PYTHON_LIBRARIES}
+
+)
 #
 ## For test
 #
