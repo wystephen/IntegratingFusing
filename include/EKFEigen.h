@@ -14,6 +14,8 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
+#include <cmath>
+
 
 class EKFEigen{
 public:
@@ -49,7 +51,7 @@ public:
   */
     bool InitNavEq(Eigen::MatrixXd u) {
 
-        double f_u(0.0), f_v(0.0), f_w(0.0);
+        long double f_u(0.0), f_v(0.0), f_w(0.0);
 
         f_u = u.col(0).mean();
         f_v = u.col(1).mean();
@@ -65,27 +67,28 @@ public:
         own_g_ = t_norm;
         std::cout << __FILE__ << ":" << __LINE__ << ":" << "own g :" << own_g_ << std::endl;
 
-        double roll(std::atan2(-f_v,(f_w))), pitch(std::atan2(f_u,(std::sqrt(f_v*f_v+f_w*f_w))));
+        double roll(std::atan2(-f_v,std::sqrt(f_v*f_v+f_u*f_u))), 
+                pitch(std::atan2(f_u,std::sqrt(f_v*f_v+f_w*f_w)));
         SO3_rotation_ = Sophus::SO3(roll,pitch,0.0);
 
-
-        /// LOOP TO GET RIGHT ANGLE
-
         Eigen::Vector3d tmp_acc(f_u,f_v,f_w);
-        for( int it(0);it<200;++it)
-        {
-            double r(atan(tmp_acc(1)/tmp_acc(2))),
-            p(atan(tmp_acc(0)/std::sqrt(tmp_acc(1)*tmp_acc(1)+tmp_acc(2)*tmp_acc(2))));
-            if(fabs(r) < 0.02&&fabs(p)<0.02)
-            {
-                break;
-            }else{
-                Sophus::SO3 tmp_so3 = Sophus::SO3(r,p,0.0);
-                SO3_rotation_ =  tmp_so3*SO3_rotation_;
-                tmp_acc = SO3_rotation_.matrix() * tmp_acc;
-            }
 
-        }
+//        /// LOOP TO GET RIGHT ANGLE
+//
+//        for( int it(0);it<200;++it)
+//        {
+//            double r(atan(tmp_acc(1)/tmp_acc(2))),
+//            p(atan(tmp_acc(0)/std::sqrt(tmp_acc(1)*tmp_acc(1)+tmp_acc(2)*tmp_acc(2))));
+//            if(fabs(r) < 0.02&&fabs(p)<0.02)
+//            {
+//                break;
+//            }else{
+//                Sophus::SO3 tmp_so3 = Sophus::SO3(r,p,0.0);
+//                SO3_rotation_ =  tmp_so3*SO3_rotation_;
+//                tmp_acc = SO3_rotation_.matrix() * tmp_acc;
+//            }
+//
+//        }
 
 
         //// JUST FOR DEBUDE (SHOULD BE DELETE AFTER USE)
