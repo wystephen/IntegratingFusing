@@ -65,34 +65,47 @@ public:
         own_g_ = t_norm;
         std::cout << __FILE__ << ":" << __LINE__ << ":" << "own g :" << own_g_ << std::endl;
 
-
-//        pitch = -asin(acc_s(1,1)/g);
-//        roll = atan(acc_s(2,1)/acc_s(3,1));
-        double roll(atan(f_v/(f_w))), pitch(-asin(f_u/(own_g_)));
+        double roll(std::atan2(-f_v,(f_w))), pitch(std::atan2(f_u,(std::sqrt(f_v*f_v+f_w*f_w))));
+        SO3_rotation_ = Sophus::SO3(roll,pitch,0.0);
 
 
+        /// LOOP TO GET RIGHT ANGLE
 
-        SO3_rotation_ = Sophus::SO3(roll,pitch,para_.init_heading1_);
-//        SO3_rotation_ = SO3_rotation_.matrix().transpose();
-//        SO3_rotation_ = SO3_rotation_.inverse();
+        Eigen::Vector3d tmp_acc(f_u,f_v,f_w);
+        for( int it(0);it<200;++it)
+        {
+            double r(atan(tmp_acc(1)/tmp_acc(2))),
+            p(atan(tmp_acc(0)/std::sqrt(tmp_acc(1)*tmp_acc(1)+tmp_acc(2)*tmp_acc(2))));
+            if(fabs(r) < 0.02&&fabs(p)<0.02)
+            {
+                break;
+            }else{
+                Sophus::SO3 tmp_so3 = Sophus::SO3(r,p,0.0);
+                SO3_rotation_ =  tmp_so3*SO3_rotation_;
+                tmp_acc = SO3_rotation_.matrix() * tmp_acc;
+            }
 
+        }
+
+
+        //// JUST FOR DEBUDE (SHOULD BE DELETE AFTER USE)
         Eigen::Vector3d attitude(SO3_rotation_.log()(0),
         SO3_rotation_.log()(1),
         SO3_rotation_.log()(2));
-
-
-        Eigen::Vector3d tmp_acc(f_u,f_v,f_w);
+        std::cout << "attitude :" << attitude.transpose() << std::endl;
+        tmp_acc = Eigen::Vector3d(f_u,f_v,f_w);
         Eigen::Matrix3d tm = SO3_rotation_.matrix();
         tm = tm.transpose().eval();
-        std::cout << tmp_acc.transpose() << std::endl;
-        std::cout << roll/M_PI*180.0 << " --- " << pitch/M_PI*180.0 << std::endl;
+        std::cout <<"source acc:" <<  tmp_acc.transpose() << std::endl;
+        std::cout << roll << " --- " << pitch << std::endl;
         std::cout << tm << std::endl;
         std::cout << "norm before:"<< tmp_acc.norm() << std::endl;
         tmp_acc = tm * tmp_acc;
-        std::cout <<__FILE__<<__LINE__ << "acc:"<<std::endl <<
+        std::cout <<__FILE__<<__LINE__ << "acc after:"<<std::endl <<
                                                 tmp_acc.transpose() << std::endl;
         std::cout << "norm after :" << tmp_acc.norm() << std::endl;
 
+        /// DELETE TO HERE
 
         x_h_.block(0, 0, 3, 1) = para_.init_pos1_;
         x_h_.block(6, 0, 3, 1) = attitude;
