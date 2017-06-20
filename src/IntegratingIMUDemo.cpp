@@ -26,7 +26,7 @@
 int main() {
 
 
-    std::string dir_name = "/home/steve/Code/Mini-IMU/Scripts/IMUWB/47/";
+    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/47/";
 
     CppExtent::CSVReader imuReader(dir_name + "imu.txt");
     CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
@@ -45,16 +45,16 @@ int main() {
             imu_data(i, j) = double(*(imuM(i, j)));
             if (0 < j < 4) {
                 imu_data(i, j) *= 9.81;//*9.81/9.64877;
-              if(j==3)
-              {
-                  imu_data(i,j) *= -1.0f;
-              }
+//              if(j==3)
+//              {
+//                  imu_data(i,j) *= -1.0f;
+//              }
             } else if (4 <= j < 7) {
                 imu_data(i, j) *= (180.0 / M_PI);
-                if(j==6)
-                {
-                    imu_data(i,j) *= -1.0f;
-                }
+//                if(j==6)
+//                {
+//                    imu_data(i,j) *= -1.0f;
+//                }
             }
         }
 
