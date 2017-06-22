@@ -62,7 +62,8 @@ public:
         }
 
         t_norm /= u.rows();
-        double roll(atan(f_v/f_w)), pitch(-asin(f_u/t_norm));
+        double roll(std::atan2(f_v,std::sqrt(f_w*f_w+f_u*f_u))),
+                pitch(std::atan2(-f_u,std::sqrt(f_v*f_v+f_w*f_w)));
 
 //        Eigen::Vector3d attitude(roll, pitch, para_.init_heading1_);
 //
