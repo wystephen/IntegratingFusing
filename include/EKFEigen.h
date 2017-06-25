@@ -69,7 +69,7 @@ public:
         double pitch(std::atan2(f_u, std::sqrt(f_v * f_v + f_w * f_w)));
 //        double roll(std::atan2(-f_v, -std::sqrt(f_w * f_w + f_u * f_u))),
 //                pitch(std::atan2(-f_u, -std::sqrt(f_v * f_v + f_w * f_w)));
-        SO3_rotation_ = Sophus::SO3(Ang2RotMatrix(Eigen::Vector3d(roll,pitch,0.0)));
+        SO3_rotation_ = Sophus::SO3(Ang2RotMatrix(Eigen::Vector3d(roll,pitch,0.0)).transpose());
 //        SO3_rotation_ = Sophus::SO3(roll,pitch,0.0);
 //        SO3_rotation_ =  Sophus::SO3::exp(Eigen::Vector3d(0.0, pitch, 0.0))*SO3_rotation_;
 //        SO3_rotation_.
@@ -158,11 +158,11 @@ public:
         Eigen::Vector3d w_tb(u(3), u(4), u(5));
 
         w_tb *= dt;
-        if (w_tb.norm() > 1e-18) {
+//        if (w_tb.norm() > 1e-18) {
 
-            SO3_rotation_ = Sophus::SO3::exp(w_tb) * SO3_rotation_;
-//        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
-        }
+//            SO3_rotation_ = Sophus::SO3::exp(w_tb) * SO3_rotation_;
+        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
+//        }
 
 
 
