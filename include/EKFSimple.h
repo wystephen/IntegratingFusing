@@ -55,27 +55,33 @@ public:
         f_v = u.col(1).mean();
         f_w = u.col(2).mean();
 
-        double t_norm= 0.0;
-        for(int i(0);i<u.rows();++i)
-        {
-            t_norm += u.block(i,0,1,3).norm();
+        double t_norm = 0.0;
+        for (int i(0); i < u.rows(); ++i) {
+            t_norm += u.block(i, 0, 1, 3).norm();
         }
 
         t_norm /= u.rows();
-        double roll(std::atan2(f_v,std::sqrt(f_w*f_w+f_u*f_u))),
-                pitch(std::atan2(-f_u,std::sqrt(f_v*f_v+f_w*f_w)));
+//        double roll(std::atan2(-f_v, -std::sqrt(f_w * f_w + f_u * f_u)));
+        double roll(std::atan2(-f_v, -f_w));
+        double pitch(std::atan2(f_u, std::sqrt(f_v * f_v + f_w * f_w)));
 
-//        Eigen::Vector3d attitude(roll, pitch, para_.init_heading1_);
-//
-//        Eigen::Quaterniond q;
-//        Eigen::AngleAxisd ang(attitude.norm(),attitude);
-//        q = ang;
-//        Sophus::SO3  = Sophus::SO3(roll,pitch,para_.init_heading1_);
 
         Eigen::Vector3d attitude(roll, pitch, para_.init_heading1_);
+//
 
-        auto SO3_rotation_ = Sophus::SO3(roll, pitch, para_.init_heading1_);
-        rotation_matrix_ = SO3_rotation_.matrix();
+        std::cout << "roll : " << roll << "pitch: " << pitch << std::endl;
+        rotation_matrix_ = Ang2RotMatrix(attitude);
+//        rotation_matrix_ = rotation_matrix_.transpose();
+        rotation_matrix_.transposeInPlace();
+
+
+        Eigen::Vector3d source_acc(f_u, f_v, f_w);
+
+        std::cout << "source :" << source_acc.transpose() << std::endl;
+
+        source_acc = rotation_matrix_ * source_acc;
+
+        std::cout << " after : " << source_acc.transpose() << std::endl;
 
 
         x_h_.block(0, 0, 3, 1) = para_.init_pos1_;
@@ -121,31 +127,40 @@ public:
 
         Eigen::Vector3d w_tb(u(3), u(4), u(5));
 
-        if (fabs(w_tb.norm()) > 1e-8) {
+        if (fabs(w_tb.norm()) > 1e-18) {
 
-//            SO3_rotation_ = Sophus::SO3::exp(-(w_tb) * dt) * SO3_rotation_;
-//            SO3_rotation_ =SO3_rotation_* Sophus::SO3::exp(-(w_tb)*dt);
-//            Eigen::Matrix3d tmp_matrx = SO3_rotation_.matrix();
-            w_tb *= dt;
 
             Eigen::Matrix3d ang_rate_matrix;
             ang_rate_matrix.setZero();
 
-            ang_rate_matrix(0,1) = -w_tb(2);
-            ang_rate_matrix(0,2) = w_tb(1);
+            w_tb *= dt;
 
-            ang_rate_matrix(1,0) = w_tb(2);
-            ang_rate_matrix(1,2) = -w_tb(0);
 
-            ang_rate_matrix(2,0) = -w_tb(1);
-            ang_rate_matrix(2,1) = w_tb(0);
 
-//            rotation_matrix_ = rotation_matrix_ * (2*Eigen::Matrix3d::Identity() + (ang_rate_matrix*dt))
-//                               * (2*Eigen::Matrix3d::Identity()-(ang_rate_matrix*dt)).inverse();
-            rotation_matrix_ = rotation_matrix_ * (
-                    Eigen::Matrix3d::Identity() + std::sin(w_tb.norm())/w_tb.norm()*ang_rate_matrix
-                    + (1-cos(w_tb.norm()))/w_tb.norm()/w_tb.norm()*ang_rate_matrix*ang_rate_matrix
-                                                  );
+//            ang_rate_matrix << 0.0, -w_tb(2), w_tb(1),
+//                    w_tb(2), 0.0, w_tb(0),
+//                    -w_tb(1), w_tb(0), 0.0;
+            Eigen::Vector3d alpha(0,0,0);
+            alpha = w_tb/w_tb.norm();
+            double phi(w_tb.norm());
+            Eigen::Matrix3d alpha_hat;
+            alpha_hat<< 0.0,-alpha(2),alpha(1),
+                    alpha(2),0.0,-alpha(0),
+                    -alpha(1),alpha(0),0.0;
+
+//            rotation_matrix_ = rotation_matrix_ * (Eigen::Matrix3d::Identity()-ang_rate_matrix);
+
+
+//            rotation_matrix_ = Eigen::pow()
+//            rotation_matrix_ = rotation_matrix_ * (2 * Eigen::Matrix3d::Identity() + (ang_rate_matrix ))
+//                               * (2 * Eigen::Matrix3d::Identity() - (ang_rate_matrix )).inverse();
+
+            rotation_matrix_  = rotation_matrix_ * (cos(phi)*Eigen::Matrix3d::Identity()+
+                    (1-cos(phi))*alpha*alpha.transpose()+sin(phi)*alpha_hat);
+//            rotation_matrix_ = rotation_matrix_ * (2.0*Eigen::Matrix3d::Identity())
+//                               + std::sin(w_tb.norm()) / w_tb.norm() * ang_rate_matrix
+//                    + (1 - cos(w_tb.norm())) / w_tb.norm() / w_tb.norm() * ang_rate_matrix * ang_rate_matrix
+//            ;
 
 
 
@@ -275,22 +290,16 @@ public:
         Eigen::Matrix3d ang_rate_matrix;
         ang_rate_matrix.setZero();
 
-        ang_rate_matrix(0,1) = -w_tb(2);
-        ang_rate_matrix(0,2) = w_tb(1);
+        ang_rate_matrix <<
+                        0.0, -w_tb(2), w_tb(1),
+                        w_tb(2), 0.0, -w_tb(0),
+                        -w_tb(1), w_tb(0), 0.0;
 
-        ang_rate_matrix(1,0) = w_tb(2);
-        ang_rate_matrix(1,2) = -w_tb(0);
+//        rotation_matrix_ = ((2 * Eigen::Matrix3d::Identity() + ang_rate_matrix)*
+//                            (2 * Eigen::Matrix3d::Identity() - ang_rate_matrix).inverse) * rotation_matrix_;
+        rotation_matrix_ = (Eigen::Matrix3d::Identity()-ang_rate_matrix)*rotation_matrix_;
 
-        ang_rate_matrix(2,0) = -w_tb(1);
-        ang_rate_matrix(2,1) = w_tb(0);
-
-//        rotation_matrix_ = (2*Eigen::Matrix3d::Identity()+ang_rate_matrix)*(2*Eigen::Matrix3d::Identity()-ang_rate_matrix).inverse() * rotation_matrix_;
-        rotation_matrix_ =rotation_matrix_* (
-                Eigen::Matrix3d::Identity() + std::sin(w_tb.norm())/w_tb.norm()*ang_rate_matrix
-                + (1-cos(w_tb.norm()))/w_tb.norm()/w_tb.norm()*ang_rate_matrix*ang_rate_matrix
-        ) ;
-//
-//        SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
+//        rotation_matrix_ = Sophus::SO3::exp(w_tb).matrix() * rotation_matrix_;
 //
 //        x_out(6) = SO3_rotation_.log()(0);
 //        x_out(7) = SO3_rotation_.log()(1);
@@ -318,8 +327,7 @@ public:
             Eigen::VectorXd dx = K * z;
             dx_ = dx;
 
-            Eigen::MatrixXd Id;
-            Id.resize(9, 9);
+            Eigen::Matrix<double,9,9> Id;
             Id.setIdentity();
 
             P_ = (Id - K * H_) * P_;
@@ -334,34 +342,49 @@ public:
         return x_h_;
     }
 
-    Eigen::VectorXd OutputAxis()
-    {
+    Eigen::VectorXd OutputAxis() {
 
         Eigen::VectorXd axis_vec(12);
         // center point
-        for(int i(0);i<3;++i)
-        {
+        for (int i(0); i < 3; ++i) {
             axis_vec(i) = x_h_(i);
         }
 
         Eigen::Matrix3d rt = rotation_matrix_;
         // offset of each axis
-        for(int i(0);i<3;++i)
-        {
-           Eigen::Vector3d at;
+        for (int i(0); i < 3; ++i) {
+            Eigen::Vector3d at;
             at.setZero();
             at(i) = 1.0;
 
-            at = rotation_matrix_*at;
-            for(int j(0);j<3;++j)
-            {
-                axis_vec(2+i*3+j) = at(j);
+            at = rotation_matrix_ * at;
+            for (int j(0); j < 3; ++j) {
+                axis_vec(2 + i * 3 + j) = at(j);
             }
 
         }
 
         return axis_vec;
 
+
+    }
+
+    inline Eigen::Matrix3d Ang2RotMatrix(Eigen::Vector3d ang) {
+        double cr(cos(ang(0)));
+        double sr(sin(ang(0)));
+
+        double cp(cos(ang(1)));
+        double sp(sin(ang(1)));
+
+        double cy(cos(ang(2)));
+        double sy(sin(ang(2)));
+
+        Eigen::Matrix3d R3;
+        R3 << cy * cp, sy * cp, -sp,
+                -sy * cr + cy * sp * sr, cy * cr + sy * sp * sr, cp * sr,
+                sy * sr + cy * sp * cr, -cy * sr + sy * sp * cr, cp * cr;
+
+        return R3;
 
     }
 

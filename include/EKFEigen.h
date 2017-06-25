@@ -17,9 +17,9 @@
 #include <cmath>
 
 
-class EKFEigen{
+class EKFEigen {
 public:
-    EKFEigen(SettingPara para){
+    EKFEigen(SettingPara para) {
         para_ = para;
 
         R_ = Eigen::Matrix3d::Zero();
@@ -57,21 +57,24 @@ public:
         f_v = u.col(1).mean();
         f_w = u.col(2).mean();
 
-        double t_norm= 0.0;
-        for(int i(0);i<u.rows();++i)
-        {
-            t_norm += u.block(i,0,1,3).norm();
+        double t_norm = 0.0;
+        for (int i(0); i < u.rows(); ++i) {
+            t_norm += u.block(i, 0, 1, 3).norm();
         }
 
         t_norm /= u.rows();
         own_g_ = t_norm;
         std::cout << __FILE__ << ":" << __LINE__ << ":" << "own g :" << own_g_ << std::endl;
+        double roll(std::atan2(-f_v, -f_w));
+        double pitch(std::atan2(f_u, std::sqrt(f_v * f_v + f_w * f_w)));
+//        double roll(std::atan2(-f_v, -std::sqrt(f_w * f_w + f_u * f_u))),
+//                pitch(std::atan2(-f_u, -std::sqrt(f_v * f_v + f_w * f_w)));
+        SO3_rotation_ = Sophus::SO3(Ang2RotMatrix(Eigen::Vector3d(roll,pitch,0.0)));
+//        SO3_rotation_ = Sophus::SO3(roll,pitch,0.0);
+//        SO3_rotation_ =  Sophus::SO3::exp(Eigen::Vector3d(0.0, pitch, 0.0))*SO3_rotation_;
+//        SO3_rotation_.
 
-        double roll(std::atan2(f_v,std::sqrt(f_w*f_w+f_u*f_u))),
-                pitch(std::atan2(-f_u,std::sqrt(f_v*f_v+f_w*f_w)));
-        SO3_rotation_ = Sophus::SO3(roll,pitch,0.0);
-
-        Eigen::Vector3d tmp_acc(f_u,f_v,f_w);
+        Eigen::Vector3d tmp_acc(f_u, f_v, f_w);
 
 //        /// LOOP TO GET RIGHT ANGLE
 //
@@ -93,19 +96,20 @@ public:
 
         //// JUST FOR DEBUDE (SHOULD BE DELETE AFTER USE)
         Eigen::Vector3d attitude(SO3_rotation_.log()(0),
-        SO3_rotation_.log()(1),
-        SO3_rotation_.log()(2));
+                                 SO3_rotation_.log()(1),
+                                 SO3_rotation_.log()(2));
         std::cout << "attitude :" << attitude.transpose() << std::endl;
-        tmp_acc = Eigen::Vector3d(f_u,f_v,f_w);
+        std::cout << "SO3 "<< SO3_rotation_ << std::endl;
+        tmp_acc = Eigen::Vector3d(f_u, f_v, f_w);
         Eigen::Matrix3d tm = SO3_rotation_.matrix();
         tm = tm.transpose().eval();
-        std::cout <<"source acc:" <<  tmp_acc.transpose() << std::endl;
+        std::cout << "source acc:" << tmp_acc.transpose() << std::endl;
         std::cout << roll << " --- " << pitch << std::endl;
         std::cout << tm << std::endl;
-        std::cout << "norm before:"<< tmp_acc.norm() << std::endl;
+        std::cout << "norm before:" << tmp_acc.norm() << std::endl;
         tmp_acc = tm * tmp_acc;
-        std::cout <<__FILE__<<__LINE__ << "acc after:"<<std::endl <<
-                                                tmp_acc.transpose() << std::endl;
+        std::cout << __FILE__ << __LINE__ << "acc after:" << std::endl <<
+                  tmp_acc.transpose() << std::endl;
         std::cout << "norm after :" << tmp_acc.norm() << std::endl;
 
         /// DELETE TO HERE
@@ -151,15 +155,15 @@ public:
         y.resize(9);
         y.setZero();
 
-        Eigen::Vector3d w_tb(u(3),u(4),u(5));
+        Eigen::Vector3d w_tb(u(3), u(4), u(5));
 
         w_tb *= dt;
+        if (w_tb.norm() > 1e-18) {
 
-
-
-
-        SO3_rotation_ =  Sophus::SO3::exp(w_tb)*SO3_rotation_;
+            SO3_rotation_ = Sophus::SO3::exp(w_tb) * SO3_rotation_;
 //        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
+        }
+
 
 
         //---------------
@@ -190,7 +194,7 @@ public:
         B.block(3, 0, 3, 3) = Eigen::Matrix3d::Identity() * dt;
 
 //        MYCHECK(1);
-        y.block(0, 0, 6, 1) = A * ( x_h.block(0, 0, 6, 1)) +
+        y.block(0, 0, 6, 1) = A * (x_h.block(0, 0, 6, 1)) +
                               B * acc_t;
 
         x_h_ = y;
@@ -264,14 +268,13 @@ public:
                                          Eigen::VectorXd dx) {
 
 
-
         Eigen::VectorXd x_out = x_in + dx;
 
         Eigen::Vector3d epsilon(dx.block(6, 0, 3, 1));
 
 
-//        SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
-        SO3_rotation_ =   SO3_rotation_ * Sophus::SO3::exp(epsilon);
+        SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
+        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(epsilon);
 
 //        x_out(6)= SO3_rotation_.log()(0);
 //        x_out(7) = SO3_rotation_.log()(1);
@@ -287,7 +290,7 @@ public:
 
         x_h_ = NavigationEquation(x_h_, u, para_.Ts_);
 
-        StateMatrix( u, para_.Ts_);
+        StateMatrix(u, para_.Ts_);
 
         P_ = (F_ * (P_)) * (F_.transpose().eval()) +
              (G_ * Q_ * G_.transpose().eval());
@@ -310,13 +313,30 @@ public:
         }
 
 
-        P_ = (P_*0.5 + P_.transpose().eval()*0.5);
-
+        P_ = (P_ * 0.5 + P_.transpose().eval() * 0.5);
 
 
         return x_h_;
     }
 
+    inline Eigen::Matrix3d Ang2RotMatrix(Eigen::Vector3d ang) {
+        double cr(cos(ang(0)));
+        double sr(sin(ang(0)));
+
+        double cp(cos(ang(1)));
+        double sp(sin(ang(1)));
+
+        double cy(cos(ang(2)));
+        double sy(sin(ang(2)));
+
+        Eigen::Matrix3d R3;
+        R3 << cy * cp, sy * cp, -sp,
+                -sy * cr + cy * sp * sr, cy * cr + sy * sp * sr, cp * sr,
+                sy * sr + cy * sp * cr, -cy * sr + sy * sp * cr, cp * cr;
+
+        return R3;
+
+    }
 
 public:
     //Parameters in here.
@@ -324,7 +344,6 @@ public:
 private:
 
     double own_g_ = 9.81;
-
 
 
     //P for single foot
