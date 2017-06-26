@@ -69,7 +69,7 @@ public:
         double pitch(std::atan2(f_u, std::sqrt(f_v * f_v + f_w * f_w)));
 //        double roll(std::atan2(-f_v, -std::sqrt(f_w * f_w + f_u * f_u))),
 //                pitch(std::atan2(-f_u, -std::sqrt(f_v * f_v + f_w * f_w)));
-        SO3_rotation_ = Sophus::SO3(Ang2RotMatrix(Eigen::Vector3d(roll,pitch,0.0)).transpose());
+        SO3_rotation_ = Sophus::SO3(Ang2RotMatrix(Eigen::Vector3d(roll,pitch,0.0)));
 //        SO3_rotation_ = Sophus::SO3(roll,pitch,0.0);
 //        SO3_rotation_ =  Sophus::SO3::exp(Eigen::Vector3d(0.0, pitch, 0.0))*SO3_rotation_;
 //        SO3_rotation_.
@@ -274,7 +274,7 @@ public:
 
 
         SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
-        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(epsilon);
+//        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(epsilon);
 
 //        x_out(6)= SO3_rotation_.log()(0);
 //        x_out(7) = SO3_rotation_.log()(1);
@@ -288,6 +288,7 @@ public:
     Eigen::VectorXd GetPosition(Eigen::VectorXd u, double zupt1) {
 
 
+        last_P_ = P_;
         x_h_ = NavigationEquation(x_h_, u, para_.Ts_);
 
         StateMatrix(u, para_.Ts_);
@@ -314,6 +315,11 @@ public:
 
 
         P_ = (P_ * 0.5 + P_.transpose().eval() * 0.5);
+
+        if(std::isnan(P_(0,0)))
+        {
+            P_ = last_P_;
+        }
 
 
         return x_h_;
@@ -348,6 +354,8 @@ private:
 
     //P for single foot
     Eigen::Matrix<double, 9, 9> P_;
+
+    Eigen::Matrix<double,9,9> last_P_ = Eigen::Matrix<double,9,9>::Identity();// C++11 is needed...
 
     Eigen::Matrix<double, 6, 6> Q_;
 
