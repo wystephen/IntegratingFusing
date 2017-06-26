@@ -12,6 +12,7 @@
 #include <Eigen/Geometry>
 #include <Eigen/Dense>
 #include <EKFSimple.h>
+#include <EKFR.h>
 
 #include "sophus/so3.h"
 #include "sophus/se3.h"
@@ -26,7 +27,7 @@
 int main() {
 
 
-    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/73/";
+    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/72/";
 
     CppExtent::CSVReader imuReader(dir_name + "imu.txt");
     CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
@@ -87,7 +88,7 @@ int main() {
 
     init_para.Ts_ = 0.005f;//1.0/ 200.0;
 
-    EKFEigen myekf(init_para);
+    EKFR myekf(init_para);
 
     myekf.InitNavEq(imu_data.block(10, 1, 40, 6));
     for (int i(0); i < imu_data.rows(); ++i) {
@@ -114,7 +115,8 @@ int main() {
 
         if (i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i - 1, 0) < 0.5) {
             out_file << vec(0) << " " << vec(1) << " " << vec(2) << std::endl;
-            std::cout << vec(0) << " " << vec(1) << " " << vec(2) << std::endl;
+            std::cout << vec(0) << " " << vec(1) << " " << vec(2) << " "
+                      << vec(3) << " " << vec(4) << " " << vec(5) << std::endl;
         }
     }
 
