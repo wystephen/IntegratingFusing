@@ -29,10 +29,10 @@ public:
 //            P_(i + 3, i + 3) = para_.sigma_initial_vel1_(i) * para_.sigma_initial_vel1_(i);
 //            P_(i + 6, i + 6) = para_.sigma_initial_att1_(i) * para_.sigma_initial_att1_(i);
 
-            R_(i, i) = para_.sigma_vel_(i) * para_.sigma_vel_(i);
+            R_(i, i) = para_.sigma_vel_(i) * para_.sigma_vel_(i) * para_.Ts_;
 
-            Q_(i+6, i+6) = para_.sigma_acc_(i) * para_.sigma_acc_(i);
-            Q_(i , i ) = para_.sigma_gyro_(i) * para_.sigma_gyro_(i);
+            Q_(i+6, i+6) = para_.sigma_acc_(i) * para_.sigma_acc_(i)*para_.Ts_;
+            Q_(i , i ) = para_.sigma_gyro_(i) * para_.sigma_gyro_(i)*para_.Ts_;
 
             H_(i, i + 3) = 1.0;
         }
@@ -57,9 +57,13 @@ public:
         double pitch = -std::asin(f_u/std::sqrt(f_u*f_u+f_v*f_v+f_w*f_w));
 
         C_pre_ = C_ = Ang2RotMatrix(Eigen::Vector3d(roll, pitch, para_.init_heading1_));
+        Eigen::Vector3d acc(f_u,f_v,f_w);
+
+        std::cout << "acc src:" << acc.transpose() << std::endl;
+        std::cout << "acc after:" << C_ * acc << std::endl;
         if(std::isnan(C_.sum()))
         {
-            std::cout << "error in initial navigation equation" << std::endl;
+//            std::cout << "error in initial navigation equation" << std::endl;
         }
 
     }
@@ -68,6 +72,11 @@ public:
 
         if (dt < 0.0) {
             dt = para_.Ts_;
+        }
+
+        if(std::isnan(x_h_.sum()))
+        {
+//            std::cout << "x_h_ is nan" << std::endl;
         }
 
 
@@ -79,7 +88,8 @@ public:
         Eigen::Vector3d acc = 0.5 * (C_ + C_pre_) * u.block(0, 0, 3, 1);
 
         x_h_.block(3, 0, 3, 1) = x_h_.block(3, 0, 3, 1) + (acc - Eigen::Vector3d(0, 0, 9.81)) * dt;
-        std::cout << "acc: " << acc - Eigen::Vector3d(0.0,0.0,9.81) << std::endl;
+//        std::cout << "acc: " << acc - Eigen::Vector3d(0.0,0.0,9.81) << std::endl;
+
         x_h_.block(0, 0, 3, 1) = x_h_.block(0, 0, 3, 1) + x_h_.block(3, 0, 3, 1) * dt;
 
 
@@ -110,8 +120,16 @@ public:
 
             C_ = (2 * Eigen::Matrix3d::Identity() + ang_matrix) *
                  (2 * Eigen::Matrix3d::Identity() - ang_matrix).inverse() * C_;
+            if(std::isnan(C_.sum()))
+            {
+//                std::cout << "error in initial navigation equation" << std::endl;
+            }
             C_pre_ = C_;
+
+
+
         }
+        P_ = (P_+P_.transpose().eval())*0.5;
 
 
         return x_h_;
