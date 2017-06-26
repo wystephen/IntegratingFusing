@@ -154,6 +154,7 @@ public:
         Eigen::VectorXd y;
         y.resize(9);
         y.setZero();
+        y = x_h;
 
         Eigen::Vector3d w_tb(u(3), u(4), u(5));
 
@@ -175,27 +176,9 @@ public:
 
         Eigen::Vector3d acc_t(f_t + g_t);
 
-        Eigen::MatrixXd A, B;
+        y.block(3,0,3,1) += acc_t*dt;
+        y.block(0,0,3,1) += y.block(3,0,3,1)*dt + 0.5 * acc_t * dt*dt;
 
-        A.resize(6, 6);
-        A.setIdentity();
-
-        A(0, 3) = dt;
-        A(1, 4) = dt;
-        A(2, 5) = dt;
-
-        B.resize(6, 3);
-        B.setZero();
-        Eigen::Matrix3d tmp;
-
-//        std::cout << B.rows() << " x " << B.cols() << std::endl;
-//        tmp.setZero();
-//        B.block(0, 0, 3, 3) = tmp;
-        B.block(3, 0, 3, 3) = Eigen::Matrix3d::Identity() * dt;
-
-//        MYCHECK(1);
-        y.block(0, 0, 6, 1) = A * (x_h.block(0, 0, 6, 1)) +
-                              B * acc_t;
 
         x_h_ = y;
 //        MYCHECK(1);

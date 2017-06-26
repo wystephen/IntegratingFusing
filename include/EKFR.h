@@ -56,7 +56,8 @@ public:
         double roll = std::atan(f_v/f_w);
         double pitch = -std::asin(f_u/std::sqrt(f_u*f_u+f_v*f_v+f_w*f_w));
 
-        C_pre_ = C_ = Ang2RotMatrix(Eigen::Vector3d(roll, pitch, para_.init_heading1_));
+//        C_pre_ = C_ = Ang2RotMatrix(Eigen::Vector3d(roll, pitch, para_.init_heading1_));
+        C_pre_ = C_ = Ang2RotMatrix(pitch,roll,para_.init_heading1_);
         Eigen::Vector3d acc(f_u,f_v,f_w);
 
         std::cout << "acc src:" << acc.transpose() << std::endl;
@@ -92,17 +93,16 @@ public:
 
         x_h_.block(0, 0, 3, 1) = x_h_.block(0, 0, 3, 1) + x_h_.block(3, 0, 3, 1) * dt;
 
-
         Eigen::Matrix3d S = hat(acc);
 
         F_.setIdentity();
         F_.block(3, 6, 3, 3) = dt * Eigen::Matrix3d::Identity();
         F_.block(6, 0, 3, 3) = -dt * S;
 
-        P_ = F_ * P_ * F_.transpose() + Q_;
+        P_ = F_ * P_ * F_.transpose().eval() + Q_;
 
-        if (zupt_flag > 0.5 & P_.norm()>0.0) {
-            K_ = (P_ * H_.transpose()) * (H_ * P_ * H_.transpose() + R_);
+        if (zupt_flag > 0.5) {
+            K_ = (P_ * H_.transpose().eval()) * (H_ * P_ * H_.transpose().eval() + R_);
 
             Eigen::Matrix<double, 9, 1> delta_x,t_delta_x;
             t_delta_x = K_ * x_h_.block(3, 0, 3, 1);
@@ -119,7 +119,7 @@ public:
             Eigen::Matrix3d ang_matrix = hat(delta_x.block(6, 0, 3, 1));
 
             C_ = (2 * Eigen::Matrix3d::Identity() + ang_matrix) *
-                 (2 * Eigen::Matrix3d::Identity() - ang_matrix).inverse() * C_;
+                 (2 * Eigen::Matrix3d::Identity() - ang_matrix).inverse().eval() * C_;
             if(std::isnan(C_.sum()))
             {
 //                std::cout << "error in initial navigation equation" << std::endl;
@@ -163,6 +163,24 @@ public:
 
         return R3;
 
+    }
+
+    inline Eigen::Matrix3d Ang2RotMatrix(double pitch,double roll,double yaw)
+    {
+        double cp = std::cos(pitch);
+        double sp = std::sin(pitch);
+
+        double cr = std::cos(roll);
+        double sr = std::sin(roll);
+
+        double cy = std::cos(yaw);
+        double sy = std::sin(yaw);
+
+        Eigen::Matrix3d C;
+        C<< cp*cy,(sr*sp*cy)-(cr*sy),(cr*sp*cy+sr*sy),
+        cp*sy,(sr*sp*sy)+(cr*cy),(cr*sp*sy)-(sr*cy),
+        -sp,sr*cp,cr*cp;
+        return C;
     }
 
     Eigen::Matrix<double, 9, 9> P_;

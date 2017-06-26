@@ -51,7 +51,8 @@ int main() {
 //                  imu_data(i,j) *= -1.0f;
 //              }
             } else if (4 <= j < 7) {
-                imu_data(i, j) *= (180.0 / M_PI);
+//                imu_data(i, j) *= (180.0 / M_PI);
+                imu_data(i,j) *= (M_PI/180.0);
 //                if(j==6)
 //                {
 //                    imu_data(i,j) *= -1.0f;
@@ -88,7 +89,8 @@ int main() {
 
     init_para.Ts_ = 0.005f;//1.0/ 200.0;
 
-    EKFR myekf(init_para);
+    EKFEigen myekf(init_para);
+
 
     myekf.InitNavEq(imu_data.block(10, 1, 40, 6));
     for (int i(0); i < imu_data.rows(); ++i) {
@@ -113,7 +115,7 @@ int main() {
 //            }
 //        }
 
-        if (i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i - 1, 0) < 0.5) {
+        if ((zupt_data.rows()-2)>i&& i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i + 1, 0) < 0.5) {
             out_file << vec(0) << " " << vec(1) << " " << vec(2) << std::endl;
             std::cout << vec(0) << " " << vec(1) << " " << vec(2) << " "
                       << vec(3) << " " << vec(4) << " " << vec(5) << std::endl;
