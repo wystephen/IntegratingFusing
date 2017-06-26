@@ -168,13 +168,14 @@ public:
 
 
         //---------------
-        Eigen::Vector3d g_t(0, 0, 9.81);//.81);
+        Eigen::Vector3d g_t(0, 0, 9.8173);//.81);
 
         Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
 //        std::cout << "Rt2t:" << Rb2t << std::endl;
         Eigen::MatrixXd f_t(Rb2t * (u.block(0, 0, 3, 1)));
 
         Eigen::Vector3d acc_t(f_t + g_t);
+        std::cout << "acc t :" << acc_t.transpose() << std::endl;
 
         y.block(3,0,3,1) += acc_t*dt;
         y.block(0,0,3,1) += y.block(3,0,3,1)*dt + 0.5 * acc_t * dt*dt;
