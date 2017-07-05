@@ -106,14 +106,14 @@ int main() {
 
         /// Output axis for each step(the first moment of detected zero-velocity state)
 //        auto tt = myekf.OutputAxis();
-//        for (int index(0); index < tt.rows(); ++index) {
-//            out_axis << tt(index);
-//            if (index < tt.rows() - 1) {
-//                out_axis << ",";
-//            } else {
-//                out_axis << std::endl;
-//            }
-//        }
+        for (int index(0); index < tt.rows(); ++index) {
+            out_axis << tt(index);
+            if (index < tt.rows() - 1) {
+                out_axis << ",";
+            } else {
+                out_axis << std::endl;
+            }
+        }
 
         if ((zupt_data.rows()-2)>i&& i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i + 1, 0) < 0.5) {
             out_file << vec(0) << " " << vec(1) << " " << vec(2) << std::endl;
