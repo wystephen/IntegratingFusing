@@ -89,7 +89,7 @@ int main() {
 
     init_para.Ts_ = 0.005f;//1.0/ 200.0;
 
-    EKFEigen myekf(init_para);
+    Ekf myekf(init_para);
 
 
     myekf.InitNavEq(imu_data.block(10, 1, 40, 6));
