@@ -144,6 +144,19 @@ target_link_libraries(
         ${PYTHON_LIBRARIES}
 
 )
+
+add_executable(
+        SimpleZUPT
+        src/SimpleCopyZUPT.cpp
+)
+target_link_libraries(
+        SimpleZUPT
+         ${Pangolin_LIBRARIES}
+        ${Sophus_LIBRARIES} ${Sophus_LIBRARIES}
+        ${G2O_LIBS} ${CSPARSE_LIBRARY}
+        ${PYTHON_LIBRARIES}
+
+)
 #
 ## For test
 #
