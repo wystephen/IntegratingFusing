@@ -54,6 +54,14 @@ int main()
     }
 
 
+    long data_size = imu_data.rows();
+
+    Eigen::Matrix<double,data_size,1> timestamp = imu_data.block(0,0,data_size,1);
+    Eigen::Matrix<double,data_size,3> acc_s = imu_data.block(0,1,data_size,3);
+    Eigen::Matrix<double,data_size,3> gyro_s = imu_data.block()
+
+
+
 
     // OUTPUT FILE
     std::ofstream out_file("./ResultData/out_result.txt");
