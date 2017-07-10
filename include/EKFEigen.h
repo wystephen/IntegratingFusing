@@ -161,7 +161,7 @@ public:
         w_tb *= dt;
 //        if (w_tb.norm() > 1e-18) {
 
-/            SO3_rotation_ = Sophus::SO3::exp(w_tb) * SO3_rotation_;
+//            SO3_rotation_ = Sophus::SO3::exp(w_tb) * SO3_rotation_;
         SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
 //        }
 
