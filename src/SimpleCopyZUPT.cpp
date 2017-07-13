@@ -58,7 +58,30 @@ int main()
 
     Eigen::Matrix<double,data_size,1> timestamp = imu_data.block(0,0,data_size,1);
     Eigen::Matrix<double,data_size,3> acc_s = imu_data.block(0,1,data_size,3);
-    Eigen::Matrix<double,data_size,3> gyro_s = imu_data.block()
+    Eigen::Matrix<double,data_size,3> gyro_s = imu_data.block(0,3,data_size,3);
+
+    double g = 9.8;
+
+
+
+    /// Initialize parameters
+    // try to use average value
+    double pitch = -std::asin(acc_s(0,0)/g);
+    double roll  = std::atan(acc_s(1,0)/acc_s(2,0));
+    double yaw = 0.0;
+
+    double cp = std::cos(pitch);
+    double sp = std::sin(pitch);
+
+    double cr = std::cos(roll);
+    double sr = std::sin(roll);
+
+    double cy = std::cos(yaw);
+    double sy = std::sin(yaw);
+
+    Eigen::Matrix3d C,C_prev;
+
+    C<< cp*cy,(cr*sp*cy-cr*sy),
 
 
 
