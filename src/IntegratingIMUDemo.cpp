@@ -27,7 +27,7 @@
 int main() {
 
 
-    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/93/";
+    std::string dir_name = "/home/steve/Code/Mini-IMU/Scripts/IMUWB/93/";
 
     CppExtent::CSVReader imuReader(dir_name + "imu.txt");
     CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
@@ -89,7 +89,7 @@ int main() {
 
     init_para.Ts_ = 0.005f;//1.0/ 200.0;
 
-    Ekf myekf(init_para);
+    EKFEigen myekf(init_para);
 
 
     myekf.InitNavEq(imu_data.block(10, 1, 40, 6));
@@ -121,6 +121,13 @@ int main() {
                       << vec(3) << " " << vec(4) << " " << vec(5) << std::endl;
         }
     }
+
+    ///Initial Parameters
+
+
+
+
+
 
     out_file.close();
     out_axis.close();
