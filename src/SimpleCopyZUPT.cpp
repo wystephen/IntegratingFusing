@@ -94,9 +94,14 @@ int main() {
     heading(0,0) = yaw;
 
 
-
     Eigen::MatrixXd acc_n(data_size,3);// acc in navigation frame
-    
+    acc_n.block(0,0,1,3) = (C*acc_s.block(0,0,1,3).transpose()).transpose();
+
+
+    Eigen::MatrixXd(    )
+
+
+
 
 
 
