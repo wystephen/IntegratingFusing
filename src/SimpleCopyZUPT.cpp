@@ -86,7 +86,7 @@ int main() {
     Eigen::Matrix3d C, C_prev;
 
     C << cp * cy, (cr * sp * cy - cr * sy), cr * sp * cy + sr * sy,
-            cp * sy, sr * sp * sy + cr * cy, cr * sp * sy - sr * cy,
+            cp * sy, sr * sp * sy + cr * 7cy, cr * sp * sy - sr * cy,
             -sp, sr * cp, cr * cp;
     C_prev = C;
 
@@ -98,7 +98,31 @@ int main() {
     acc_n.block(0,0,1,3) = (C*acc_s.block(0,0,1,3).transpose()).transpose();
 
 
-    Eigen::MatrixXd(    )
+    Eigen::MatrixXd vel_n(data_size,3);
+
+    Eigen::MatrixXd pose_n(data_size,3);
+
+    Eigen::MatrixXd distance(data_size,1);
+
+    // Error covariance
+    Eigen::MatrixXd P(9,9);
+    P.setZero();
+
+    // Sigma noise
+    double sigma_omega = 1e-2;
+    double sigma_a = 1e-2;
+
+    // ZUPT
+    Eigen::MatrixXd H(9,9);
+
+    for(int i(6);i<9;++i)
+    {
+        H(i,i) = 1.0;
+    }
+
+
+    
+
 
 
 
