@@ -138,7 +138,15 @@ int main() {
 
         Eigen::Vector3d gyro_s1 = gyro_s.block(t,0,1,3).transpose();
 
-        
+        Eigen::Matrix3d ang_rate_matrix;
+
+        ang_rate_matrix<< 0.0,-gyro_s(2),gyro_s1(1),
+        gyro_s1(2),0.0,-gyro_s1(0),
+        -gyro_s1(1),gyro_s1(0),0.0;
+
+        C = C_prev*(2*Eigen::Matrix3d::Identity()+)
+
+
 
     }
 
