@@ -120,8 +120,30 @@ int main() {
         H(i,i) = 1.0;
     }
 
+    double sigma_v = 1e-2;
 
-    
+    Eigen::MatrixXd R(3,3);
+    for(int i(0);i<3;++i)
+    {
+        R(i,i)  = sigma_v*sigma_v;
+    }
+
+    double gyro_threshold = 0.6;
+
+    for(int t(1);t<data_size;++t)
+    {
+        double dt = timestamp(t)-timestamp(t-1);
+
+        //Skew-symmetric matrix for angular rates
+
+        Eigen::Vector3d gyro_s1 = gyro_s.block(t,0,1,3).transpose();
+
+        
+
+    }
+
+
+
 
 
 
