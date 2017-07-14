@@ -144,10 +144,10 @@ int main() {
         gyro_s1(2),0.0,-gyro_s1(0),
         -gyro_s1(1),gyro_s1(0),0.0;
 
-        C = C_prev*((2*Eigen::Matrix3d::Identity()+(ang_rate_matrix * dt))*
-                (2.0*Eigen::Matrix3d::Identity()-(ang_rate_matrix * dt)).inv());
+        C = C_prev*((2*Eigen::Matrix3d::Identity()+(dt * ang_rate_matrix ))*
+                (2.0*Eigen::Matrix3d::Identity()-(dt * ang_rate_matrix)).inverse());
 
-        acc_n.block()
+//        acc_n.block()
 
 
 
