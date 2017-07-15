@@ -25,6 +25,13 @@
 //#include <pangolin/pangolin.h>
 
 int main() {
+
+    // Special initial value
+
+    Eigen::MatrixXd K(9,3);
+    K.setIdentity();
+
+
     // INPUT FILE
     std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/93/";
 
@@ -189,7 +196,9 @@ int main() {
         // Zero-velocity updates
         if( gyro_s.block(t,0,1,3).norm() < gyro_threshold)
         {
-            K = (P)
+            K = (P*H.transpose())*(H*P*H.transpose()+R);
+
+            Eigen::MatrixXd delta_x = 
         }
 
 
