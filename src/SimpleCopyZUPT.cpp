@@ -99,10 +99,13 @@ int main() {
 
 
     Eigen::MatrixXd vel_n(data_size,3);
+    vel_n.setZero();
 
     Eigen::MatrixXd pose_n(data_size,3);
+    pose_n.setZero();
 
     Eigen::MatrixXd distance(data_size,1);
+    distance.setZero();
 
     // Error covariance
     Eigen::MatrixXd P(9,9);
@@ -148,6 +151,52 @@ int main() {
                 (2.0*Eigen::Matrix3d::Identity()-(dt * ang_rate_matrix)).inverse());
 
 //        acc_n.block()
+
+        acc_n.block(t,0,1,3) = (C*acc_s.block(t,0,1,3).transpose().eval()).transpose();
+
+        vel_n.block(t,0,1,3) = vel_n.block(t-1,0,1,3) +
+                dt / 2.0 * ((acc_n.block(t,0,1,3)-Eigen::Vector3d(0,0,g).transpose())+
+                        (acc_n.block(t-1,0,1,3)-Eigen::Vector3d(0,0,g).transpose()));
+
+        pose_n.block(t,0,1,3) = pose_n.block(t-1,0,1,3) +
+                dt / 2.0 * (vel_n.block(t,0,1,3)+vel_n.block(t-1,0,1,3));
+
+
+        Eigen::Matrix3d S;
+        S<< 0.0,-acc_n(t,2),acc_n(t,1),
+        acc_n(t,2),0.0,-acc_n(t,0),
+        -acc_n(t,1),acc_n(t,0),0.0;
+
+        Eigen::MatrixXd F(9,9);
+        F.setZero();
+
+        F.block(0,0,3,3) = Eigen::Matrix3d::Identity();
+        F.block(3,3,3,3) = Eigen::Matrix3d::Identity();
+        F.block(6,6,3,3) = Eigen::Matrix3d::Identity();
+
+        F.block(3,6,3,3) = dt * Eigen::Matrix3d::Identity();
+        F.block(6,3,3,3) = -dt * S;
+
+        Eigen::MatrixXd Q(9,9);
+        Q.setZero();
+
+        Q.block(0,0,3,3) = sigma_omega*sigma_omega*dt*Eigen::Matrix3d::Identity();
+        Q.block(6, 6,3,3) = sigma_a*sigma_a*dt*Eigen::Matrix3d::Identity();
+
+        // propagate the error covariance matrix
+        P = F*P*F.transpose().eval() + Q;
+
+        // Zero-velocity updates
+        if( gyro_s.block(t,0,1,3).norm() < gyro_threshold)
+        {
+            K = (P)
+        }
+
+
+
+
+
+
 
 
 
