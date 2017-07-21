@@ -93,7 +93,7 @@ int main() {
     Eigen::Matrix3d C, C_prev;
 
     C << cp * cy, (cr * sp * cy - cr * sy), cr * sp * cy + sr * sy,
-            cp * sy, sr * sp * sy + cr * 7cy, cr * sp * sy - sr * cy,
+            cp * sy, sr * sp * sy + cr * cy, cr * sp * sy - sr * cy,
             -sp, sr * cp, cr * cp;
     C_prev = C;
 
@@ -113,7 +113,7 @@ int main() {
 
     Eigen::MatrixXd distance(data_size,1);
     distance.setZero();
-    
+
 
     // Error covariance
     Eigen::MatrixXd P(9,9);
