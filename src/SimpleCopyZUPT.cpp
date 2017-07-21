@@ -113,6 +113,7 @@ int main() {
 
     Eigen::MatrixXd distance(data_size,1);
     distance.setZero();
+    
 
     // Error covariance
     Eigen::MatrixXd P(9,9);
