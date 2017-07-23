@@ -199,7 +199,8 @@ int main() {
         {
             K = (P*H.transpose())*(H*P*H.transpose()+R);
 
-//            Eigen::MatrixXd delta_x =
+            auto delta_x = K * vel_n.block(t,0,1,3).transpose();
+            delta_x = delta_x.transpose().eval();
         }
 
 
