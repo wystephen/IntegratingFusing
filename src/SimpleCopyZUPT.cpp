@@ -33,7 +33,7 @@ int main() {
 
 
     // INPUT FILE
-    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/93/";
+    std::string dir_name = "/home/steve/Code/Mini-IMU/Scripts/IMUWB/93/";
 
     CppExtent::CSVReader imuReader(dir_name + "imu.txt");
     CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
@@ -195,8 +195,7 @@ int main() {
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
 
-            auto delta_x = K * vel_n.block(t, 0, 1, 3).transpose();
-            delta_x = delta_x.transpose().eval();
+            auto delta_x = (K * vel_n.block(t, 0, 1, 3).transpose()).transpose();
 
 
             // update the error covariance matrix
@@ -224,6 +223,13 @@ int main() {
         C_prev = C;
 
 
+
+    }
+
+
+    for(int i(0);i<pose_n.rows();++i)
+    {
+        std::cout << pose_n.block(i,0,1,3) << std::endl;
     }
 
 
