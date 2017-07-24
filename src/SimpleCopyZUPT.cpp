@@ -69,7 +69,7 @@ int main() {
     Eigen::MatrixXd gyro_s(data_size, 3);
     timestamp = imu_data.block(0, 0, data_size, 1);
     acc_s = imu_data.block(0, 1, data_size, 3);// acc in sensor frame
-    gyro_s = imu_data.block(0, 3, data_size, 3);
+    gyro_s = imu_data.block(0, 4, data_size, 3);
 
     double g = 9.8;
 
@@ -195,7 +195,9 @@ int main() {
         P = F * P * F.transpose().eval() + Q;
 
         // Zero-velocity updates
+        std::cout<< gyro_s.block(t,0,1,3) << std::endl;
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
+            std::cout << "is zero velocity" << std::endl;
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
 
             auto delta_x = (K * vel_n.block(t, 0, 1, 3).transpose()).transpose();
@@ -217,7 +219,7 @@ int main() {
             C = (2 * Eigen::Matrix3d::Identity() + ang_matrix) *
                 (2.0 * Eigen::Matrix3d::Identity() - ang_matrix).inverse()
                 * C;
-            if(isnan(C.sum()))
+            if(std::isnan(C.sum()))
             {
                 std::cout << C << "\n" << "t: " << t << "\nline:" << __LINE__ << std::endl;
             }
