@@ -195,7 +195,7 @@ int main() {
         P = F * P * F.transpose().eval() + Q;
 
         // Zero-velocity updates
-        std::cout<< gyro_s.block(t,0,1,3) << std::endl;
+//        std::cout<< gyro_s.block(t,0,1,3) << std::endl;
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
             std::cout << "is zero velocity" << std::endl;
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
