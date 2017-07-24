@@ -197,7 +197,7 @@ int main() {
         // Zero-velocity updates
 //        std::cout<< gyro_s.block(t,0,1,3) << std::endl;
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
-//            std::cout << "is zero velocity" << std::endl;
+            std::cout << "Begin zero velocity Update" << std::endl;
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
 
             Eigen::Matrix<double,9,1> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose().eval());
