@@ -217,6 +217,10 @@ int main() {
             C = (2 * Eigen::Matrix3d::Identity() + ang_matrix) *
                 (2.0 * Eigen::Matrix3d::Identity() - ang_matrix).inverse()
                 * C;
+            if(isnan(C.sum()))
+            {
+                std::cout << C << "\n" << "t: " << t << "\nline:" << __LINE__ << std::endl;
+            }
 
             vel_n.block(t,0,1,3) = vel_n.block(t,0,1,3) + vel_error.transpose();
             pose_n.block(t,0,1,3) = pose_n.block(t,0,1,3) + pos_error.transpose();
@@ -230,14 +234,14 @@ int main() {
 
 
 
-
-
-
-
-
-
-
-
+    for(int i(0);i<pose_n.rows()-1;++i)
+    {
+        if(gyro_s.block(i,0,1,3).norm()<gyro_threshold)// &&
+//                gyro_s.block(i+1,0,1,3).norm() > gyro_threshold)
+        {
+            std::cout << pose_n.block(i,0,1,3) << std::endl;
+        }
+    }
 
 
 
