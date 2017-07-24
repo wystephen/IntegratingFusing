@@ -216,8 +216,12 @@ int main() {
                 (2.0 * Eigen::Matrix3d::Identity() - ang_matrix).inverse()
                 * C;
 
-            vel_n.block()
+            vel_n.block(t,0,1,3) = vel_n.block(t,0,1,3) + vel_error.transpose();
+            pose_n.block(t,0,1,3) = pose_n.block(t,0,1,3) + pos_error.transpose();
+
         }
+
+        C_prev = C;
 
 
     }
