@@ -200,9 +200,10 @@ int main() {
 //            std::cout << "is zero velocity" << std::endl;
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
 
-            Eigen::Matrix<double,1,9> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose()).transpose();
+            Eigen::Matrix<double,9,1> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose().eval());
 
 
+            std::cout << " after computer delta x " << std::endl;
             // update the error covariance matrix
             P = (Eigen::Matrix<double, 9, 9>::Identity() - K * H) * P;
 
@@ -215,6 +216,8 @@ int main() {
                     attitude_error(2), 0.0, -attitude_error(0),
                     -attitude_error(1), attitude_error(0), 0.0;
             ang_matrix *= -1.0;
+
+            std::cout << " after computer C " << std::endl;
 
             C = (2 * Eigen::Matrix3d::Identity() + ang_matrix) *
                 (2.0 * Eigen::Matrix3d::Identity() - ang_matrix).inverse()
