@@ -28,7 +28,7 @@ int main() {
 
     // Special initial value
 
-    Eigen::MatrixXd K(9, 3);
+    Eigen::Matrix<double,9,3> K;
     K.setIdentity();
 
 
@@ -197,10 +197,10 @@ int main() {
         // Zero-velocity updates
 //        std::cout<< gyro_s.block(t,0,1,3) << std::endl;
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
-            std::cout << "is zero velocity" << std::endl;
+//            std::cout << "is zero velocity" << std::endl;
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
 
-            auto delta_x = (K * vel_n.block(t, 0, 1, 3).transpose()).transpose();
+            Eigen::Matrix<double,1,9> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose()).transpose();
 
 
             // update the error covariance matrix
