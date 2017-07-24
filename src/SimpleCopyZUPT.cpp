@@ -91,6 +91,8 @@ int main() {
     double sy = std::sin(yaw);
 
     Eigen::Matrix3d C, C_prev;
+    C.setZero();
+    C_prev.setZero();
 
     C << cp * cy, (cr * sp * cy - cr * sy), cr * sp * cy + sr * sy,
             cp * sy, sr * sp * sy + cr * cy, cr * sp * sy - sr * cy,
@@ -125,6 +127,7 @@ int main() {
 
     // ZUPT
     Eigen::MatrixXd H(9, 9);
+    H.setZero();
 
     for (int i(6); i < 9; ++i) {
         H(i, i) = 1.0;
@@ -218,19 +221,14 @@ int main() {
             vel_n.block(t,0,1,3) = vel_n.block(t,0,1,3) + vel_error.transpose();
             pose_n.block(t,0,1,3) = pose_n.block(t,0,1,3) + pos_error.transpose();
 
+
         }
 
         C_prev = C;
 
-
-
     }
 
 
-    for(int i(0);i<pose_n.rows();++i)
-    {
-        std::cout << pose_n.block(i,0,1,3) << std::endl;
-    }
 
 
 
