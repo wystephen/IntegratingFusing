@@ -192,21 +192,23 @@ int main() {
         Q.block(6, 6, 3, 3) = sigma_a * sigma_a * dt * Eigen::Matrix3d::Identity();
 
         // propagate the error covariance matrix
+        auto P_presave = P;
         P = F * P * F.transpose().eval() + Q;
 
         if(std::isnan(P.sum()))
         {
             std::cout << F << "\n " << Q << std::endl;
+            P = P_presave;
         }
 
         // Zero-velocity updates
 //        std::cout<< gyro_s.block(t,0,1,3) << std::endl;
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
-            std::cout << "Begin zero velocity Update" << std::endl;
+            std::cout << "Begin zero velocity Update : " << t << std::endl;
 
             std::cout<< (P*H.transpose()) << std::endl;
             std::cout << "--------" << std::endl;
-            std::cout << (H*P*H.transpose()+R) << std::endl;
+            std::cout << (H*P*H.transpose()) << std::endl;
 
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
 
