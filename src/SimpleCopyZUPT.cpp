@@ -51,7 +51,7 @@ int main() {
             if (0 < j < 4) {
                 imu_data(i, j) *= 9.81;
             } else if (4 <= j < 7) {
-                imu_data(i, j) *= (M_PI / 180.0);
+                imu_data(i, j) *= (M_PI / 180.0f);
             }
         }
 
@@ -200,6 +200,7 @@ int main() {
             std::cout << "Begin zero velocity Update" << std::endl;
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
 
+            std::cout << "k:"<< K << std::endl;
             Eigen::Matrix<double,9,1> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose().eval());
 
 
