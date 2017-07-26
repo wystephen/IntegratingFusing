@@ -209,7 +209,7 @@ int main() {
 
             std::cout<< (P*H.transpose()) << std::endl;
             std::cout << "--------" << std::endl;
-            std::cout << (H*P*H.transpose()) << std::endl;
+            std::cout << (H*P*H.transpose()+R) << std::endl;
 
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
 
