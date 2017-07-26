@@ -201,6 +201,7 @@ int main() {
             P = P_presave;
         }
 
+
         // Zero-velocity updates
 //        std::cout<< gyro_s.block(t,0,1,3) << std::endl;
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
