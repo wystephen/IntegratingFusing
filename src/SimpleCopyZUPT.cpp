@@ -33,7 +33,7 @@ int main() {
 
 
     // INPUT FILE
-    std::string dir_name = "/home/steve/Code/Mini-IMU/Scripts/IMUWB/93/";
+    std::string dir_name = "/home/steve/Code/Mini-IMU/Scripts/IMUWB/46/";
 
     CppExtent::CSVReader imuReader(dir_name + "imu.txt");
     CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
@@ -174,6 +174,12 @@ int main() {
         S << 0.0, -acc_n(t, 2), acc_n(t, 1),
                 acc_n(t, 2), 0.0, -acc_n(t, 0),
                 -acc_n(t, 1), acc_n(t, 0), 0.0;
+        if(acc_n.block(t,0,1,3).norm()>200.0)
+        {
+            std::cout << "t: " << t
+                      << " acc_n: " << acc_n.block(t,0,1,3)
+                      << std::endl;
+        }
 
         Eigen::MatrixXd F(9, 9);
         F.setZero();
