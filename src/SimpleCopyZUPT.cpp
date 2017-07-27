@@ -118,8 +118,8 @@ int main() {
 
 
     // Error covariance
-    Eigen::MatrixXd P(9, 9);
-    P.setZero();
+    Eigen::Matrix<double,9,9> P;
+    P.setIdentity();
 
     // Sigma noise
     double sigma_omega = 1e-2;
@@ -184,6 +184,7 @@ int main() {
 
         F.block(3, 6, 3, 3) = dt * Eigen::Matrix3d::Identity();
         F.block(6, 0, 3, 3) = -dt * S;
+        std::cout<< "F:" << F << std::endl;
 
         Eigen::MatrixXd Q(9, 9);
         Q.setZero();
