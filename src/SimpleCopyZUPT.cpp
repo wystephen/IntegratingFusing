@@ -189,7 +189,7 @@ int main() {
         Q.setZero();
 
         Q.block(0, 0, 3, 3) = sigma_omega * sigma_omega * dt * Eigen::Matrix3d::Identity();
-        Q.block(6, 6, 3, 3) = sigma_a * sigma_a * dt * Eigen::Matrix3d::Identity();
+        Q.block(6, 0, 3, 3) = sigma_a * sigma_a * dt * Eigen::Matrix3d::Identity();
 
         // propagate the error covariance matrix
         auto P_presave = P;
