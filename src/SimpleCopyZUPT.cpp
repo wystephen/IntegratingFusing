@@ -197,8 +197,12 @@ int main() {
 
         if(std::isnan(P.sum()))
         {
-            std::cout << F << "\n " << Q << std::endl;
+            std::cout << "error at t= " << t
+                      << F << "\n " << Q << std::endl;
+
+
             P = P_presave;
+            std::cout << "P:" << P  << std::endl;
         }
 
 
