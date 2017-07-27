@@ -157,6 +157,10 @@ int main() {
 
         C = C_prev * ((2 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
                       (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
+        if(std::isnan(C.sum()))
+        {
+            C = C_prev;
+        }
 
 //        acc_n.block()
 
@@ -177,6 +181,7 @@ int main() {
         if(acc_n.block(t,0,1,3).norm()>300.0 || std::isnan(acc_n.block(t,0,1,3).norm()))
         {
             std::cout << "t: " << t
+                    << "C : " << C << "\n"
                       << " acc_n: " << acc_n.block(t,0,1,3)
                       << std::endl;
         }
@@ -205,7 +210,7 @@ int main() {
         if(std::isnan(P.sum()))
         {
             std::cout << "error at t= " << t
-                      << F << "\n " << Q << std::endl;
+                      << F << "\n Q: " << Q << std::endl;
 
 
             P = P_presave;
@@ -241,6 +246,15 @@ int main() {
             std::cout << " after computer delta x " << std::endl;
             // update the error covariance matrix
             P = (Eigen::Matrix<double, 9, 9>::Identity() - K * H) * P;
+            if(std::isnan(P.sum()))
+            {
+                std::cout << "t: " << t
+                                   << "\n K: " << K <<
+                          "H: " << H << std::endl;
+                P = P_presave;
+
+            }
+
 
             Eigen::Vector3d attitude_error = delta_x.block(0, 0, 3, 1);
             Eigen::Vector3d pos_error = delta_x.block(3, 0, 3, 1);
@@ -254,12 +268,13 @@ int main() {
 
             std::cout << " after computer C " << std::endl;
 
-            C = (2 * Eigen::Matrix3d::Identity() + ang_matrix) *
+            C = (2.0 * Eigen::Matrix3d::Identity() + ang_matrix) *
                 (2.0 * Eigen::Matrix3d::Identity() - ang_matrix).inverse()
                 * C;
             if (std::isnan(C.sum())) {
                 std::cout << C << "\n" << "t: " << t << "\nline:"
                           << __LINE__ << std::endl;
+                C = C_prev;
             }
 
             vel_n.block(t, 0, 1, 3) = vel_n.block(t, 0, 1, 3) + vel_error.transpose();
