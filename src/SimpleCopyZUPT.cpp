@@ -126,11 +126,11 @@ int main() {
     double sigma_a = 1e-2;
 
     // ZUPT
-    Eigen::MatrixXd H(9, 9);
+    Eigen::MatrixXd H(3, 9);
     H.setZero();
 
     for (int i(6); i < 9; ++i) {
-        H(i, i) = 1.0;
+        H(i-6, i) = 1.0;
     }
 
     double sigma_v = 1e-2;
@@ -174,7 +174,7 @@ int main() {
         S << 0.0, -acc_n(t, 2), acc_n(t, 1),
                 acc_n(t, 2), 0.0, -acc_n(t, 0),
                 -acc_n(t, 1), acc_n(t, 0), 0.0;
-        if(acc_n.block(t,0,1,3).norm()>200.0)
+        if(acc_n.block(t,0,1,3).norm()>200.0 || std::isnan(acc_n.block(t,0,1,3).norm()))
         {
             std::cout << "t: " << t
                       << " acc_n: " << acc_n.block(t,0,1,3)
@@ -229,7 +229,7 @@ int main() {
 
             std::cout<< (P*H.transpose()) << std::endl;
             std::cout << "--------" << std::endl;
-            std::cout << (H*P*H.transpose()+R) << std::endl;
+            std::cout << (H*P*H.transpose()).rows() << std::endl;
 
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
 
