@@ -217,6 +217,7 @@ int main() {
             Eigen::Matrix<double, 9, 1> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose().eval());
 
 
+
             std::cout << " after computer delta x " << std::endl;
             // update the error covariance matrix
             P = (Eigen::Matrix<double, 9, 9>::Identity() - K * H) * P;
