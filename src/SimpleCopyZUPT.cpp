@@ -188,7 +188,7 @@ int main() {
                       << std::endl;
         }
 
-        Eigen::MatrixXd F(9, 9);
+        Eigen::Matrix<double,9,9> F;
         F.setZero();
 
         F.block(0, 0, 3, 3) = Eigen::Matrix3d::Identity();
@@ -199,7 +199,7 @@ int main() {
         F.block(6, 0, 3, 3) = -dt * S;
         std::cout<< "F:" << F << std::endl;
 
-        Eigen::MatrixXd Q(9, 9);
+        Eigen::Matrix<double,9,9> Q;
         Q.setZero();
 
         Q.block(0, 0, 3, 3) = sigma_omega * sigma_omega * dt * Eigen::Matrix3d::Identity();
