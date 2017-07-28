@@ -159,6 +159,8 @@ int main() {
                       (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
         if(std::isnan(C.sum()))
         {
+            std::cout << "t: " << t
+                               << " C: " << C << std::endl;
             C = C_prev;
         }
 
