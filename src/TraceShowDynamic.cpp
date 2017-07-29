@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 
     // Define Camera Render Object (for view / scene browsing)
     pangolin::OpenGlRenderState s_cam(
-            pangolin::ProjectionMatrix(1024, 768, 840, 840, 640, 480, 0.1, 1000),
+            pangolin::ProjectionMatrix(1024, 768, 1024, 768, 640, 480, 0.1, 1000),
             pangolin::ModelViewLookAt(-0, 0.5, -90, 0, 0, 0, pangolin::AxisY)
     );
 
