@@ -255,6 +255,7 @@ int main() {
             P = (Eigen::Matrix<double, 9, 9>::Identity() - K * H) * P;
             if(std::isnan(P.sum()))
             {
+
                 std::cout << "t: " << t
                                    << "\n K: " << K <<
                           "H: " << H << std::endl;
