@@ -160,7 +160,7 @@ int main() {
         if(std::isnan(C.sum()))
         {
             std::cout << "t: " << t
-                               << " C: " << C << std::endl;
+                      << " C: " << C << std::endl;
             C = C_prev;
         }
 
@@ -259,7 +259,7 @@ int main() {
                 std::cout << "t: " << t
                                    << "\n K: " << K <<
                           "H: " << H << std::endl;
-//                P = P_presave;
+                P = P_presave;
 
             }
 
