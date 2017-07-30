@@ -256,10 +256,10 @@ int main() {
             if(std::isnan(P.sum()))
             {
 
-                std::cout << "t: " << t
-                                   << "\n K: " << K <<
-                          "H: " << H << std::endl;
-                P = P_presave;
+//                std::cout << "t: " << t
+//                                   << "\n K: " << K <<
+//                          "H: " << H << std::endl;
+//                P = P_presave;
 
             }
 
