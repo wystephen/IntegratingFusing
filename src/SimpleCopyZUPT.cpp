@@ -239,6 +239,11 @@ int main() {
             std::cout << (H*P*H.transpose()).rows() << std::endl;
 
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
+            if(std::isnan(K.sum()))
+            {
+                std::cout << " t: " << t <<
+                                         "\n K: " << K << std::endl;
+            }
 
             std::cout << "k:" << K << std::endl;
             Eigen::Matrix<double, 9, 1> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose().eval());
