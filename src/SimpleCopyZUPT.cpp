@@ -281,7 +281,7 @@ int main() {
                 * C;
             if (std::isnan(C.sum())) {
                 std::cout << C << "\n" << "t: " << t << "\nline:"
-                          << __LINE__ << std::endl;
+                          << __FILE__ << __LINE__  << std::endl;
                 std::cout << "delta x :" <<  vel_n.block(t,0,1,3);
                 C = C_prev;
             }
