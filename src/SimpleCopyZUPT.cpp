@@ -282,7 +282,7 @@ int main() {
             if (std::isnan(C.sum())) {
                 std::cout << C << "\n" << "t: " << t << "\nline:"
                           << __FILE__ <<" " <<  __LINE__  << std::endl;
-                std::cout << "delta x :" <<  vel_n.block(t,0,1,3) << std::endl;
+                std::cout << "vel_n x :" <<  vel_n.block(t,0,1,3) << std::endl;
                 C = C_prev;
             }
 
@@ -311,4 +311,52 @@ int main() {
 
     // OUTPUT FILE
     std::ofstream out_file("./ResultData/out_result.txt");
+    std::ofstream out_vel("./ResultData/out_vel.txt");
+    std::ofstream out_acc("./ResultData/out_acc.txt");
+
+    for(int i(0);i<pose_n.rows();++i)
+    {
+        for(int j(0);j<pose_n.cols();++j)
+        {
+            out_file << pose_n(i,j);
+            if(j<pose_n.cols()-1)
+            {
+                out_file<< ";";
+            } else{
+
+                out_file << std::endl;
+            }
+        }
+    }
+
+    for(int i(0);i<vel_n.rows();++i)
+    {
+        for(int j(0);j<vel_n.cols();++j)
+        {
+            out_vel << vel_n(i,j);
+            if(j<vel_n.cols()-1)
+            {
+                out_vel<< ";";
+            }else{
+                out_vel<< std::endl;
+            }
+        }
+    }
+
+    for(int i(0);i<acc_n.rows();++i)
+    {
+        for(int j(0);j<acc_n.cols();++j)
+        {
+            out_acc << acc_n(i,j);
+            if(j<acc_n.cols()-1)
+            {
+                out_acc << ";";
+            }else{
+                out_acc << std::endl;
+            }
+        }
+    }
+
+
+    for()
 }
