@@ -118,7 +118,7 @@ int main() {
 
 
     // Error covariance
-    Eigen::Matrix<double,9,9> P;
+    Eigen::Matrix<double, 9, 9> P;
     P.setIdentity();
 
     // Sigma noise
@@ -130,7 +130,7 @@ int main() {
     H.setZero();
 
     for (int i(6); i < 9; ++i) {
-        H(i-6, i) = 1.0;
+        H(i - 6, i) = 1.0;
     }
 
     double sigma_v = 1e-2;
@@ -157,8 +157,7 @@ int main() {
 
         C = C_prev * ((2 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
                       (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
-        if(std::isnan(C.sum()))
-        {
+        if (std::isnan(C.sum())) {
             std::cout << "t: " << t
                       << " C: " << C << std::endl;
             C = C_prev;
@@ -180,15 +179,14 @@ int main() {
         S << 0.0, -acc_n(t, 2), acc_n(t, 1),
                 acc_n(t, 2), 0.0, -acc_n(t, 0),
                 -acc_n(t, 1), acc_n(t, 0), 0.0;
-        if(acc_n.block(t,0,1,3).norm()>300.0 || std::isnan(acc_n.block(t,0,1,3).norm()))
-        {
+        if (acc_n.block(t, 0, 1, 3).norm() > 300.0 || std::isnan(acc_n.block(t, 0, 1, 3).norm())) {
             std::cout << "t: " << t
-                    << "C : " << C << "\n"
-                      << " acc_n: " << acc_n.block(t,0,1,3)
+                      << "C : " << C << "\n"
+                      << " acc_n: " << acc_n.block(t, 0, 1, 3)
                       << std::endl;
         }
 
-        Eigen::Matrix<double,9,9> F;
+        Eigen::Matrix<double, 9, 9> F;
         F.setZero();
 
         F.block(0, 0, 3, 3) = Eigen::Matrix3d::Identity();
@@ -197,9 +195,9 @@ int main() {
 
         F.block(3, 6, 3, 3) = dt * Eigen::Matrix3d::Identity();
         F.block(6, 0, 3, 3) = -dt * S;
-        std::cout<< "F:" << F << std::endl;
+        std::cout << "F:" << F << std::endl;
 
-        Eigen::Matrix<double,9,9> Q;
+        Eigen::Matrix<double, 9, 9> Q;
         Q.setZero();
 
         Q.block(0, 0, 3, 3) = sigma_omega * sigma_omega * dt * Eigen::Matrix3d::Identity();
@@ -209,14 +207,13 @@ int main() {
         auto P_presave = P;
         P = F * P * F.transpose().eval() + Q;
 
-        if(std::isnan(P.sum()))
-        {
+        if (std::isnan(P.sum())) {
             std::cout << "error at t= " << t
                       << F << "\n Q: " << Q << std::endl;
 
 
             P = P_presave;
-            std::cout << "P:" << P  << std::endl;
+            std::cout << "P:" << P << std::endl;
         }
 
 
@@ -225,39 +222,34 @@ int main() {
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
 
             // First detecter for data error
-            if(acc_n.block(t,0,1,3).norm()>10.0)
-            {
-                std::cout << "t: " << t << " acc_n: " << acc_n.block(t,0,1,3) << std::endl;
+            if (acc_n.block(t, 0, 1, 3).norm() > 10.0) {
+                std::cout << "t: " << t << " acc_n: " << acc_n.block(t, 0, 1, 3) << std::endl;
             }
-
 
 
             std::cout << "Begin zero velocity Update : " << t << std::endl;
 
-            std::cout<< (P*H.transpose()) << std::endl;
+            std::cout << (P * H.transpose()) << std::endl;
             std::cout << "--------" << std::endl;
-            std::cout << (H*P*H.transpose()).rows() << std::endl;
+            std::cout << (H * P * H.transpose()).rows() << std::endl;
 
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
-            if(std::isnan(K.sum()))
-            {
+            if (std::isnan(K.sum())) {
                 std::cout << " t: " << t <<
-                                         "\n K: " << K << std::endl;
+                          "\n K: " << K << std::endl;
             }
 
             std::cout << "k:" << K << std::endl;
             Eigen::Matrix<double, 9, 1> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose().eval());
 
 
-
             std::cout << " after computer delta x " << std::endl;
             // update the error covariance matrix
             P = (Eigen::Matrix<double, 9, 9>::Identity() - K * H) * P;
-            if(std::isnan(P.sum()))
-            {
+            if (std::isnan(P.sum())) {
 
                 std::cout << "t: " << t
-                                   << "\n K: " << K <<
+                          << "\n K: " << K <<
                           "H: " << H << std::endl;
                 P = P_presave;
 
@@ -281,8 +273,8 @@ int main() {
                 * C;
             if (std::isnan(C.sum())) {
                 std::cout << C << "\n" << "t: " << t << "\nline:"
-                          << __FILE__ <<" " <<  __LINE__  << std::endl;
-                std::cout << "vel_n x :" <<  vel_n.block(t,0,1,3) << std::endl;
+                          << __FILE__ << " " << __LINE__ << std::endl;
+                std::cout << "vel_n x :" << vel_n.block(t, 0, 1, 3) << std::endl;
                 C = C_prev;
             }
 
@@ -314,44 +306,35 @@ int main() {
     std::ofstream out_vel("./ResultData/out_vel.txt");
     std::ofstream out_acc("./ResultData/out_acc.txt");
 
-    for(int i(0);i<pose_n.rows();++i)
-    {
-        for(int j(0);j<pose_n.cols();++j)
-        {
-            out_file << pose_n(i,j);
-            if(j<pose_n.cols()-1)
-            {
-                out_file<< ";";
-            } else{
+    for (int i(0); i < pose_n.rows(); ++i) {
+        for (int j(0); j < pose_n.cols(); ++j) {
+            out_file << pose_n(i, j);
+            if (j < pose_n.cols() - 1) {
+                out_file << ";";
+            } else {
 
                 out_file << std::endl;
             }
         }
     }
 
-    for(int i(0);i<vel_n.rows();++i)
-    {
-        for(int j(0);j<vel_n.cols();++j)
-        {
-            out_vel << vel_n(i,j);
-            if(j<vel_n.cols()-1)
-            {
-                out_vel<< ";";
-            }else{
-                out_vel<< std::endl;
+    for (int i(0); i < vel_n.rows(); ++i) {
+        for (int j(0); j < vel_n.cols(); ++j) {
+            out_vel << vel_n(i, j);
+            if (j < vel_n.cols() - 1) {
+                out_vel << ";";
+            } else {
+                out_vel << std::endl;
             }
         }
     }
 
-    for(int i(0);i<acc_n.rows();++i)
-    {
-        for(int j(0);j<acc_n.cols();++j)
-        {
-            out_acc << acc_n(i,j);
-            if(j<acc_n.cols()-1)
-            {
+    for (int i(0); i < acc_n.rows(); ++i) {
+        for (int j(0); j < acc_n.cols(); ++j) {
+            out_acc << acc_n(i, j);
+            if (j < acc_n.cols() - 1) {
                 out_acc << ";";
-            }else{
+            } else {
                 out_acc << std::endl;
             }
         }
