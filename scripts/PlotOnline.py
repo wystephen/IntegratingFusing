@@ -39,6 +39,7 @@ class RealTimePlot:
 if __name__ == '__main__':
     file_name = '../ResultData/out_result.txt'
     # print(os.stat(file_name).st_mtime)
+
     rshow = RealTimePlot(file_name)
 
     rshow.start()
