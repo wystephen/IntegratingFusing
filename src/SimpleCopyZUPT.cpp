@@ -163,8 +163,6 @@ int main() {
             C = C_prev;
         }
 
-//        acc_n.block()
-
         acc_n.block(t, 0, 1, 3) = (C * acc_s.block(t, 0, 1, 3).transpose().eval()).transpose();
 
         vel_n.block(t, 0, 1, 3) = vel_n.block(t - 1, 0, 1, 3) +
