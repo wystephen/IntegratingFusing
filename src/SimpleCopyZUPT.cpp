@@ -241,7 +241,8 @@ int main() {
 
             std::cout << "k:" << K << std::endl;
             Eigen::Matrix<double, 9, 1> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose().eval());
-            std::cout << "deltax :" << delta_x << std::endl;
+//            std::cout << "deltax :" << delta_x << std::endl;
+            std::cout<< "current vel n :" << vel_n.block(t,0,1,3) << std::endl;
 
 
             std::cout << " after computer delta x " << std::endl;
