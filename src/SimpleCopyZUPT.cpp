@@ -168,10 +168,10 @@ int main() {
         }
 
         acc_n.block(t, 0, 1, 3) = (C * acc_s.block(t, 0, 1, 3).transpose().eval()).transpose();
-        if (acc_n.block(t, 0, 1, 3).norm() > 300) {
-            std::cout << "  acc_n error \n C : " << C << "\n accn : " << acc_n.block(t, 0, 1, 3) << " \n acc s: "
-                      << acc_s.block(t, 0, 1, 3) << std::endl;
-        }
+//        if (acc_n.block(t, 0, 1, 3).norm() > 300) {
+//            std::cout << "  acc_n error \n C : " << C << "\n accn : " << acc_n.block(t, 0, 1, 3) << " \n acc s: "
+//                      << acc_s.block(t, 0, 1, 3) << std::endl;
+//        }
 
         vel_n.block(t, 0, 1, 3) = vel_n.block(t - 1, 0, 1, 3) +
                                   dt / 2.0 * ((acc_n.block(t, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()) +
@@ -185,10 +185,12 @@ int main() {
         S << 0.0, -acc_n(t, 2), acc_n(t, 1),
                 acc_n(t, 2), 0.0, -acc_n(t, 0),
                 -acc_n(t, 1), acc_n(t, 0), 0.0;
-        if (acc_n.block(t, 0, 1, 3).norm() > 300.0 || std::isnan(acc_n.block(t, 0, 1, 3).norm())) {
+        if (std::abs(acc_n.block(t, 0, 1, 3).norm()- acc_s.block(t,0,1,3).norm())>1.0
+                     || std::isnan(acc_n.block(t, 0, 1, 3).norm())) {
             std::cout << "t: " << t
                       << "C : " << C << "\n"
                       << " acc_n: " << acc_n.block(t, 0, 1, 3)
+
                       << std::endl;
         }
 
