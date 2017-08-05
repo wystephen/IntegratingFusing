@@ -235,9 +235,9 @@ int main() {
 
             std::cout << "Begin zero velocity Update : " << t << std::endl;
 
-            std::cout << (P * H.transpose()) << std::endl;
-            std::cout << "--------" << std::endl;
-            std::cout << (H * P * H.transpose()).rows() << std::endl;
+//            std::cout << (P * H.transpose()) << std::endl;
+//            std::cout << "--------" << std::endl;
+//            std::cout << (H * P * H.transpose()).rows() << std::endl;
 
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
             if (std::isnan(K.sum())) {
