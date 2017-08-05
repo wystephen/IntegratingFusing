@@ -154,7 +154,7 @@ int main() {
         Eigen::Vector3d gyro_s1 = gyro_s.block(t, 0, 1, 3).transpose();
         Eigen::Matrix3d ang_rate_matrix;
         ang_rate_matrix.setZero();
-        if (gyro_s1.norm() > 1e-8) {
+        if (gyro_s1.norm() > 1e-4) {
 
 
             ang_rate_matrix << 0.0f, -gyro_s(2), gyro_s1(1),
@@ -166,7 +166,7 @@ int main() {
         }
 
 
-        if (std::isnan(C.sum()) || (C * C.transpose()).norm() > 3.2) {
+        if (std::isnan(C.sum()) || (C * C.transpose()-Eigen::Matrix3d::Identity()).norm() > 0.2) {
             std::cout << "t: " << t
                       << "\n ang rate : " << ang_rate_matrix
                       << "\n C: " << C
