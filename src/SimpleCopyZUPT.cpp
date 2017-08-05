@@ -161,9 +161,11 @@ int main() {
 
         C = C_prev * ((2 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
                       (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
-        if (std::isnan(C.sum())) {
+        if (std::isnan(C.sum()) || (C*C.transpose()).norm()>3.2) {
             std::cout << "t: " << t
-                      << " C: " << C << std::endl;
+                      << " C: " << C
+                      << "\n C * C^T: " << C * C.transpose()
+                                    <<  std::endl;
             C = C_prev;
         }
 
