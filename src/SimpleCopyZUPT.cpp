@@ -105,6 +105,10 @@ int main() {
 
     Eigen::MatrixXd acc_n(data_size, 3);// acc in navigation frame
     acc_n.block(0, 0, 1, 3) = (C * acc_s.block(0, 0, 1, 3).transpose()).transpose();
+//    if(acc_n.block(0,0,1,3).norm()>260)
+//    {
+//        std::cout << " acc n :" << acc_n.block(0,)
+//    }
 
 
     Eigen::MatrixXd vel_n(data_size, 3);
@@ -164,6 +168,10 @@ int main() {
         }
 
         acc_n.block(t, 0, 1, 3) = (C * acc_s.block(t, 0, 1, 3).transpose().eval()).transpose();
+        if (acc_n.block(t, 0, 1, 3).norm() > 300) {
+            std::cout << "  acc_n error \n C : " << C << "\n accn : " << acc_n.block(t, 0, 1, 3) << " \n acc s: "
+                      << acc_s.block(t, 0, 1, 3) << std::endl;
+        }
 
         vel_n.block(t, 0, 1, 3) = vel_n.block(t - 1, 0, 1, 3) +
                                   dt / 2.0 * ((acc_n.block(t, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()) +
@@ -274,7 +282,8 @@ int main() {
             if (std::isnan(C.sum())) {
                 std::cout << C << "\n" << "t: " << t << "\nline:"
                           << __FILE__ << " " << __LINE__ << std::endl;
-                std::cout << "acc_n : " << acc_n.block(t,0,1,3) << " acc i :" << acc_s.block(t,0,1,3) << std::endl;
+                std::cout << "acc_n : " << acc_n.block(t, 0, 1, 3) << " acc i :" << acc_s.block(t, 0, 1, 3)
+                          << std::endl;
                 std::cout << "vel_n x :" << vel_n.block(t, 0, 1, 3) << std::endl;
                 C = C_prev;
             }
