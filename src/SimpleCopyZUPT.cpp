@@ -155,17 +155,18 @@ int main() {
 
         Eigen::Matrix3d ang_rate_matrix;
 
-        ang_rate_matrix << 0.0, -gyro_s(2), gyro_s1(1),
-                gyro_s1(2), 0.0, -gyro_s1(0),
-                -gyro_s1(1), gyro_s1(0), 0.0;
+        ang_rate_matrix << 0.0f, -gyro_s(2), gyro_s1(1),
+                gyro_s1(2), 0.0f, -gyro_s1(0),
+                -gyro_s1(1), gyro_s1(0), 0.0f;
 
-        C = C_prev * ((2 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
-                      (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
-        if (std::isnan(C.sum()) || (C*C.transpose()).norm()>3.2) {
+        C = C * ((2 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
+                 (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
+        if (std::isnan(C.sum()) || (C * C.transpose()).norm() > 3.2) {
             std::cout << "t: " << t
-                      << " C: " << C
-                      << "\n C * C^T: " << C * C.transpose()
-                                    <<  std::endl;
+                      << "\n ang rate : " << ang_rate_matrix
+                    << "\n C: " << C
+                    << "\n C * C^T: " << C * C.transpose()
+                    << std::endl;
             C = C_prev;
         }
 
@@ -187,14 +188,14 @@ int main() {
         S << 0.0, -acc_n(t, 2), acc_n(t, 1),
                 acc_n(t, 2), 0.0, -acc_n(t, 0),
                 -acc_n(t, 1), acc_n(t, 0), 0.0;
-        if (std::abs(acc_n.block(t, 0, 1, 3).norm()- acc_s.block(t,0,1,3).norm())>1.0
-                     || std::isnan(acc_n.block(t, 0, 1, 3).norm())) {
+        if (std::abs(acc_n.block(t, 0, 1, 3).norm() - acc_s.block(t, 0, 1, 3).norm()) > 1.0
+            || std::isnan(acc_n.block(t, 0, 1, 3).norm())) {
             std::cout << "t: " << t
                       << "\nC : " << C
                       << "\n C*C^T:" << C * C.transpose()
 
                       << " \nacc_n: " << acc_n.block(t, 0, 1, 3)
-                    << "\n acc_s : " << acc_s.block(t,0,1,3)<< std::endl
+                      << "\n acc_s : " << acc_s.block(t, 0, 1, 3) << std::endl
                       << std::endl;
         }
 
@@ -228,8 +229,10 @@ int main() {
             std::cout << "P:" << P << std::endl;
         }
 
+        C_prev = C;
 
-        // Zero-velocity updates
+
+        ///// Zero-velocity updates
 //        std::cout<< gyro_s.block(t,0,1,3) << std::endl;
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
 
