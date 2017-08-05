@@ -154,26 +154,24 @@ int main() {
         Eigen::Vector3d gyro_s1 = gyro_s.block(t, 0, 1, 3).transpose();
         Eigen::Matrix3d ang_rate_matrix;
         ang_rate_matrix.setZero();
-        if(gyro_s1.norm() > 1e-8)
-        {
+        if (gyro_s1.norm() > 1e-8) {
 
 
+            ang_rate_matrix << 0.0f, -gyro_s(2), gyro_s1(1),
+                    gyro_s1(2), 0.0f, -gyro_s1(0),
+                    -gyro_s1(1), gyro_s1(0), 0.0f;
 
-        ang_rate_matrix << 0.0f, -gyro_s(2), gyro_s1(1),
-                gyro_s1(2), 0.0f, -gyro_s1(0),
-                -gyro_s1(1), gyro_s1(0), 0.0f;
-
-        C = C * ((2.0 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
-                 (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
+            C = C * ((2.0 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
+                     (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
         }
 
 
         if (std::isnan(C.sum()) || (C * C.transpose()).norm() > 3.2) {
             std::cout << "t: " << t
                       << "\n ang rate : " << ang_rate_matrix
-                    << "\n C: " << C
-                    << "\n C * C^T: " << C * C.transpose()
-                    << std::endl;
+                      << "\n C: " << C
+                      << "\n C * C^T: " << C * C.transpose()
+                      << std::endl;
             C = C_prev;
         }
 
