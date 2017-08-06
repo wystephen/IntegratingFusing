@@ -166,7 +166,7 @@ int main() {
         }
 
 
-        if (std::isnan(C.sum()) || (C * C.transpose()-Eigen::Matrix3d::Identity()).norm() > 0.2) {
+        if (std::isnan(C.sum()) || (C * C.transpose() - Eigen::Matrix3d::Identity()).norm() > 0.2) {
             std::cout << "t: " << t
                       << "\n ang rate : " << ang_rate_matrix
                       << "\n C: " << C
