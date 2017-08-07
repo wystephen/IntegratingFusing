@@ -15,8 +15,7 @@
 
 #include <Eigen/Dense>
 
-enum ZeroDetectorAlogorithm
-{
+enum ZeroDetectorAlogorithm {
     GLRT,
     MV,
     MAG,
@@ -27,19 +26,16 @@ enum ZeroDetectorAlogorithm
 #ifndef IMU_NAVIGATION_SETTINGPARA_H
 #define IMU_NAVIGATION_SETTINGPARA_H
 
-class SettingPara
-{
+class SettingPara {
 public:
 
-    bool LoadParaFromJson()
-    {
+    bool LoadParaFromJson() {
         //ToDo:Load paramenters form a json_like file.
 
         return true;
     }
 
-    SettingPara(bool isDefult=true)
-    {
+    SettingPara(bool isDefult = true) {
         latitude_ = 58.0;
 
         altitude_ = 100.0;
@@ -47,11 +43,8 @@ public:
         ComputeGravity();
 
 
-
-
         init_pos1_ = Eigen::Vector3d(0, 0, 0);
         init_pos2_ = Eigen::Vector3d(0, 0, 0);
-
 
 
         sigma_a_ = 0.0350;
@@ -83,7 +76,7 @@ public:
 
     int RangConstraintIntervel_ = 820;
 
-    double init_heading1_ = (-97.5) * M_PI /180.0;//heading
+    double init_heading1_ = (-97.5) * M_PI / 180.0;//heading
     double init_heading2_ = (96.05) * M_PI / 180.0;
 
     Eigen::Vector3d init_pos1_ = Eigen::Vector3d(0, 0, 0);//pose
@@ -91,50 +84,47 @@ public:
     Eigen::Vector3d init_pos_ = Eigen::Vector3d(0, 0, 0);
 
     double sigma_a_ = 0.035;//Stanard deviation of the accelermter noise [ m/ s^2];
-    double sigma_g_ = 0.35 * M_PI /180.0;
+    double sigma_g_ = 0.35 * M_PI / 180.0;
 
     double gamma_ = 200;//Threshold used in the zero-velocity detector.
 
 //    bool Open_Distance_Constaint_ = true;
 
     //FILTER PARAMETERS
-    Eigen::Vector3d sigma_acc_ = 4 * 0.7 * Eigen::Vector3d(1,1,1);//[m/s^2]
+    Eigen::Vector3d sigma_acc_ = 4 * 0.7 * Eigen::Vector3d(1, 1, 1);//[m/s^2]
 
-    Eigen::Vector3d sigma_gyro_ = 4 * 10 * Eigen::Vector3d(0.1,0.1,0.1) * M_PI / 180.0;//[rad/s]
+    Eigen::Vector3d sigma_gyro_ = 4 * 10 * Eigen::Vector3d(0.1, 0.1, 0.1) * M_PI / 180.0;//[rad/s]
 
-    Eigen::Vector3d sigma_vel_ = 5 * Eigen::Vector3d(0.01,0.01,0.01) ; // [m/s]
+    Eigen::Vector3d sigma_vel_ = 5 * Eigen::Vector3d(0.01, 0.01, 0.01); // [m/s]
 
     /////////////////////////////////////////////
 
-    Eigen::Vector3d sigma_initial_pos1_= 1e-2 * Eigen::Vector3d(0.1,0.1,0.1);//Position
+    Eigen::Vector3d sigma_initial_pos1_ = 1e-2 * Eigen::Vector3d(0.1, 0.1, 0.1);//Position
 
-    Eigen::Vector3d sigma_initial_vel1_ = 1e-5 * Eigen::Vector3d(1,1,1);
+    Eigen::Vector3d sigma_initial_vel1_ = 1e-5 * Eigen::Vector3d(1, 1, 1);
 
-    Eigen::Vector3d sigma_initial_att1_ = (M_PI/180 * Eigen::Vector3d(0.1,0.1,0.001));
+    Eigen::Vector3d sigma_initial_att1_ = (M_PI / 180 * Eigen::Vector3d(0.1, 0.1, 0.001));
 
-    Eigen::Vector3d sigma_initial_pos2_= 1e-2 * Eigen::Vector3d(0.1,0.1,0.1);//Position
+    Eigen::Vector3d sigma_initial_pos2_ = 1e-2 * Eigen::Vector3d(0.1, 0.1, 0.1);//Position
 
-    Eigen::Vector3d sigma_initial_vel2_ = 1e-5 * Eigen::Vector3d(1,1,1);
+    Eigen::Vector3d sigma_initial_vel2_ = 1e-5 * Eigen::Vector3d(1, 1, 1);
 
     Eigen::Vector3d sigma_initial_att2_ = (M_PI / 180.0 * Eigen::Vector3d(0.1, 0.1, 0.001));
 
 
-
-    void ComputeGravity()
-    {
+    void ComputeGravity() {
         //
 
-        if(latitude_>800)
-        {
+        if (latitude_ > 800) {
             MYERROR("latitude_ is not set or it is  bigger than 800.0 !")
 
-        }else{
+        } else {
             double lambda(M_PI * latitude_ / 180.0);
 
             /*
              * gamma=9.780327*(1+0.0053024*sin(lambda)^2-0.0000058*sin(2*lambda)^2);
              */
-            double gamma = 9.780327 * (1 + 0.0053024 * std::pow(std::sin(lambda),2.0) -
+            double gamma = 9.780327 * (1 + 0.0053024 * std::pow(std::sin(lambda), 2.0) -
                                        0.0000058 * std::pow(std::sin(2.0 * lambda), 2.0));
 
             /*
@@ -150,7 +140,6 @@ public:
     }
 
 };
-
 
 
 #endif //IMU_NAVIGATION_SETTINGPARA_H
