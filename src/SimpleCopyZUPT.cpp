@@ -154,15 +154,17 @@ int main() {
         Eigen::Vector3d gyro_s1 = gyro_s.block(t, 0, 1, 3).transpose();
         Eigen::Matrix3d ang_rate_matrix;
         ang_rate_matrix.setZero();
-        if (gyro_s1.norm() > 1e-4) {
-
-
+        if (gyro_s1.norm() > 1e-8) {
             ang_rate_matrix << 0.0f, -gyro_s(2), gyro_s1(1),
                     gyro_s1(2), 0.0f, -gyro_s1(0),
                     -gyro_s1(1), gyro_s1(0), 0.0f;
 
             C = C * ((2.0 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
                      (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
+            if(std::isnan((2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse().sum()))
+            {
+                std::cout << " inverse of 2*I-dt*ang_rate_matrix with nan " << std::endl;
+            }
         }
 
 
