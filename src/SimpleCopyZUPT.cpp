@@ -71,7 +71,7 @@ int main() {
     acc_s = imu_data.block(0, 1, data_size, 3);// acc in sensor frame
     gyro_s = imu_data.block(0, 4, data_size, 3);
 
-    double g = 9.8;
+    double g = 9.81;
 
 
 
@@ -188,6 +188,14 @@ int main() {
         vel_n.block(t, 0, 1, 3) = vel_n.block(t - 1, 0, 1, 3) +
                                   dt / 2.0 * ((acc_n.block(t, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()) +
                                               (acc_n.block(t - 1, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()));
+        if((vel_n.block(t,0,1,3)-vel_n.block(t-1,0,1,3)).norm()>300)
+        {
+            std::cout << "t : " << t << " change of velocity(average of acc: " ;
+            std::cout << dt / 2.0 * ((acc_n.block(t, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()) +
+                                              (acc_n.block(t - 1, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()));
+            std::cout << std::endl;
+
+        }
 
         pose_n.block(t, 0, 1, 3) = pose_n.block(t - 1, 0, 1, 3) +
                                    dt / 2.0 * (vel_n.block(t, 0, 1, 3) + vel_n.block(t - 1, 0, 1, 3));
