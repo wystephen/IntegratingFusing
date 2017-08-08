@@ -163,6 +163,9 @@ int main() {
                      (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
             if (std::isnan((2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse().sum())) {
                 std::cout << " inverse of 2*I-dt*ang_rate_matrix with nan " << std::endl;
+                C = C_prev;
+            }else{
+                C_prev = C;
             }
         }
 
