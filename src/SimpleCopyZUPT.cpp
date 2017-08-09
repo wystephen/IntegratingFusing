@@ -26,6 +26,10 @@
 
 int main() {
 
+    // Pre set
+    std::cout.precision(5);
+
+
     // Special initial value
 
     Eigen::Matrix<double, 9, 3> K;
@@ -159,7 +163,7 @@ int main() {
                     gyro_s1(2), 0.0f, -gyro_s1(0),
                     -gyro_s1(1), gyro_s1(0), 0.0f;
 
-            C = C * ((2.0 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
+            C = C_prev * ((2.0 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
                      (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
             if (std::isnan((2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse().sum())) {
                 std::cout << " inverse of 2*I-dt*ang_rate_matrix with nan " << std::endl;
@@ -188,6 +192,8 @@ int main() {
         vel_n.block(t, 0, 1, 3) = vel_n.block(t - 1, 0, 1, 3) +
                                   dt / 2.0 * ((acc_n.block(t, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()) +
                                               (acc_n.block(t - 1, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()));
+
+
         if ((vel_n.block(t, 0, 1, 3) - vel_n.block(t - 1, 0, 1, 3)).norm() > 300) {
             std::cout << "t : " << t << " change of velocity(average of acc: ";
             std::cout << dt / 2.0 * ((acc_n.block(t, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()) +
