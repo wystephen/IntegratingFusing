@@ -155,7 +155,7 @@ int main() {
         Eigen::Matrix3d ang_rate_matrix;
         ang_rate_matrix.setZero();
         if (gyro_s1.norm() > 1e-8) {
-            ang_rate_matrix << 0.0f, -gyro_s(2), gyro_s1(1),
+            ang_rate_matrix << 0.0f, -gyro_s1(2), gyro_s1(1),
                     gyro_s1(2), 0.0f, -gyro_s1(0),
                     -gyro_s1(1), gyro_s1(0), 0.0f;
 
