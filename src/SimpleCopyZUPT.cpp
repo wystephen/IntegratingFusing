@@ -178,7 +178,10 @@ int main() {
             std::cout << "t: " << t
                       << "\n ang rate : " << ang_rate_matrix
                       << "\n C: " << C
+                    << "\n C_pre: " << C_prev
+
                       << "\n C * C^T: " << C * C.transpose()
+                    << "\n C_prev*C_prev^T: " << C_prev * C_prev.transpose()
                       << std::endl;
             C = C_prev;
         }
