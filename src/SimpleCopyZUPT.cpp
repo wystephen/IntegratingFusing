@@ -174,7 +174,7 @@ int main() {
         }
 
 
-        if (std::isnan(C.sum()) || (C * C.transpose() - Eigen::Matrix3d::Identity()).norm() > 0.2) {
+        if (std::isnan(C.sum()) || (C * C.transpose() - Eigen::Matrix3d::Identity()).norm() > 0.2 || t == 14) {
             std::cout << "t: " << t
                       << "\n ang rate : " << ang_rate_matrix
                       << "\n C: " << C
@@ -182,7 +182,7 @@ int main() {
 
                       << "\n C * C^T: " << C * C.transpose()
                     << "\n C_prev*C_prev^T: " << C_prev * C_prev.transpose()
-                    << "norm of C*CT-I: " <<(C * C.transpose() - Eigen::Matrix3d::Identity()).norm()
+                    << "\nnorm of C*CT-I: " <<(C * C.transpose() - Eigen::Matrix3d::Identity()).norm()
                       << std::endl;
             C = C_prev;
         }
