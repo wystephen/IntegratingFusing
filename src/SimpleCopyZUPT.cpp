@@ -182,6 +182,7 @@ int main() {
 
                       << "\n C * C^T: " << C * C.transpose()
                     << "\n C_prev*C_prev^T: " << C_prev * C_prev.transpose()
+                    << "norm of C*CT-I: " <<(C * C.transpose() - Eigen::Matrix3d::Identity()).norm()
                       << std::endl;
             C = C_prev;
         }
