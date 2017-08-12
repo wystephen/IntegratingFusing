@@ -164,7 +164,7 @@ int main() {
                     -gyro_s1(1), gyro_s1(0), 0.0f;
 
             C = C_prev * ((2.0 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
-                     (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
+                          (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
             if (std::isnan((2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse().sum())) {
                 std::cout << " inverse of 2*I-dt*ang_rate_matrix with nan " << std::endl;
                 C = C_prev;
@@ -178,11 +178,11 @@ int main() {
             std::cout << "t: " << t
                       << "\n ang rate : " << ang_rate_matrix
                       << "\n C: " << C
-                    << "\n C_pre: " << C_prev
+                      << "\n C_pre: " << C_prev
 
                       << "\n C * C^T: " << C * C.transpose()
-                    << "\n C_prev*C_prev^T: " << C_prev * C_prev.transpose()
-                    << "\nnorm of C*CT-I: " <<(C * C.transpose() - Eigen::Matrix3d::Identity()).norm()
+                      << "\n C_prev*C_prev^T: " << C_prev * C_prev.transpose()
+                      << "\nnorm of C*CT-I: " << (C * C.transpose() - Eigen::Matrix3d::Identity()).norm()
                       << std::endl;
             C = C_prev;
         }
@@ -271,6 +271,7 @@ int main() {
 //            std::cout << (P * H.transpose()) << std::endl;
 //            std::cout << "--------" << std::endl;
 //            std::cout << (H * P * H.transpose()).rows() << std::endl;
+
 
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
             if (std::isnan(K.sum())) {
