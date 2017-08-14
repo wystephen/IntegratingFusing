@@ -236,7 +236,8 @@ int main() {
 
         F.block(3, 6, 3, 3) = dt * Eigen::Matrix3d::Identity();
         F.block(6, 0, 3, 3) = -dt * S;
-        std::cout << "F:" << F << std::endl;
+        std::cout << "\nF:" << F << std::endl;
+        std::cout << "\n S : " << S << std::endl;
 
         Eigen::Matrix<double, 9, 9> Q;
         Q.setZero();
