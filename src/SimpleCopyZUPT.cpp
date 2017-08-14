@@ -198,10 +198,13 @@ int main() {
                                               (acc_n.block(t - 1, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()));
 
 
+
+
         if ((vel_n.block(t, 0, 1, 3) - vel_n.block(t - 1, 0, 1, 3)).norm() > 300) {
             std::cout << "t : " << t << " change of velocity(average of acc: ";
             std::cout << dt / 2.0 * ((acc_n.block(t, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()) +
                                      (acc_n.block(t - 1, 0, 1, 3) - Eigen::Vector3d(0, 0, g).transpose()));
+            std::cout << "\n delta of acc: " << acc_n.block(t,0,1,3) - acc_n.block(t-1,0,1,3) ;
             std::cout << std::endl;
 
         }
