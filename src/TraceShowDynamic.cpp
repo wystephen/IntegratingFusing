@@ -218,8 +218,7 @@ int main(int argc, char *argv[]) {
                         glPopMatrix();
                     }
 
-                    if(show_beacon_sphere)
-                    {
+                    if (show_beacon_sphere) {
                         glPushMatrix();
                         glColor4f(0.8, 0.8, 0.8, 0.1);
                         glTranslated(*uwb_mat(j, 0), *uwb_mat(j, 1), *uwb_mat(j, 2));
@@ -228,8 +227,6 @@ int main(int argc, char *argv[]) {
                         gluSphere(quadricObj2, 1.0, 260000, 260000);
                         glPopMatrix();
                     }
-
-
 
 
                 }

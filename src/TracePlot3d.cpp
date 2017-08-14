@@ -104,6 +104,7 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < axis_mat.GetRows() - 1; ++i) {
             glVertex3f(*axis_mat(i, 0), *axis_mat(i, 1), *axis_mat(i, 2));
             glVertex3f(*axis_mat(i + 1, 0), *axis_mat(i + 1, 1), *axis_mat(i + 1, 2));
+
         }
         glEnd();
         glPopMatrix();
