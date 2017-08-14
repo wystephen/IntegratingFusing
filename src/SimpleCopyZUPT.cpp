@@ -251,9 +251,11 @@ int main() {
             std::cout << "error at t= " << t
                       << F << "\n Q: " << Q << std::endl;
 
-
             P = P_presave;
             std::cout << "P:" << P << std::endl;
+        }else{
+            // update p~
+            P_presave = P;
         }
 
         C_prev = C;
