@@ -344,9 +344,6 @@ int main() {
     }
 
 
-
-
-
     // OUTPUT FILE
     std::ofstream out_file("./ResultData/out_result.txt");
     std::ofstream out_vel("./ResultData/out_vel.txt");
