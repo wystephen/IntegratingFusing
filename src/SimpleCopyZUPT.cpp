@@ -315,7 +315,7 @@ int main() {
                 * C;
             if (std::isnan(C.sum())) {
                 std::cout << C << "\n" << "t: " << t << "\nline:"
-                          << __FILE__ << " " << __LINE__ ;
+                          << __FILE__ << " " << __LINE__;
                 std::cout << "acc_n : " << acc_n.block(t, 0, 1, 3) << " acc i :" << acc_s.block(t, 0, 1, 3);
                 std::cout << "vel_n x :" << vel_n.block(t, 0, 1, 3);
                 std::cout << "\n(I-ang_matrix).inverse() : "
