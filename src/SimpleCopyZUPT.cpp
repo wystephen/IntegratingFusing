@@ -220,7 +220,7 @@ int main() {
             std::cout << "t: " << t
                       << "\nC : " << C
                       << "\n C*C^T:" << C * C.transpose()
-                      << " \nacc_n: " << acc_n.block(t, 0, 1, 3)
+                      << "\nacc_n: " << acc_n.block(t, 0, 1, 3)
                       << "\n acc_s : " << acc_s.block(t, 0, 1, 3)
                       << std::endl;
         }
