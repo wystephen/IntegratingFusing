@@ -253,7 +253,7 @@ int main() {
 
             P = P_presave;
             std::cout << "P:" << P << std::endl;
-        }else{
+        } else {
             // update p~
             P_presave = P;
         }
@@ -318,8 +318,9 @@ int main() {
                           << __FILE__ << " " << __LINE__ << std::endl;
                 std::cout << "acc_n : " << acc_n.block(t, 0, 1, 3) << " acc i :" << acc_s.block(t, 0, 1, 3);
 
-                std::cout << "vel_n x :" << vel_n.block(t, 0, 1, 3) ;
-                std::cout << "\n(I-ang_matrix).inverse() : " << (2.0 * Eigen::Matrix3d::Identity() - ang_matrix).inverse()
+                std::cout << "vel_n x :" << vel_n.block(t, 0, 1, 3);
+                std::cout << "\n(I-ang_matrix).inverse() : "
+                          << (2.0 * Eigen::Matrix3d::Identity() - ang_matrix).inverse()
                           << std::endl;
                 C = C_prev;
             }
