@@ -210,7 +210,8 @@ int main() {
                                    dt / 2.0 * (vel_n.block(t, 0, 1, 3) + vel_n.block(t - 1, 0, 1, 3));
 
 
-        Eigen::Matrix3d S;    S.setZero();
+        Eigen::Matrix3d S;
+        S.setZero();
         S << 0.0, -acc_n(t, 2), acc_n(t, 1),
                 acc_n(t, 2), 0.0, -acc_n(t, 0),
                 -acc_n(t, 1), acc_n(t, 0), 0.0;
@@ -267,12 +268,10 @@ int main() {
             if (acc_n.block(t, 0, 1, 3).norm() > 10.0) {
                 std::cout << "t: " << t << " acc_n: " << acc_n.block(t, 0, 1, 3) << std::endl;
             }
-
-
             std::cout << "Begin zero velocity Update : " << t << std::endl;
 
-
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
+
             if (std::isnan(K.sum())) {
                 std::cout << " t: " << t <<
                           "\n K: " << K << std::endl;
@@ -280,9 +279,6 @@ int main() {
 
             std::cout << "k:" << K << std::endl;
             Eigen::Matrix<double, 9, 1> delta_x = (K * vel_n.block(t, 0, 1, 3).transpose().eval());
-//            std::cout << "deltax :" << delta_x << std::endl;
-//            std::cout<< "current vel n :" << vel_n.block(t,0,1,3) << std::endl;
-
 
             std::cout << " after computer delta x " << std::endl;
             // update the error covariance matrix
@@ -296,15 +292,14 @@ int main() {
 
             }
 
-
             Eigen::Vector3d attitude_error = delta_x.block(0, 0, 3, 1);
             Eigen::Vector3d pos_error = delta_x.block(3, 0, 3, 1);
             Eigen::Vector3d vel_error = delta_x.block(6, 0, 3, 1);
 
             Eigen::Matrix3d ang_matrix;
-            ang_matrix << 0.0, -attitude_error(2), attitude_error(1),
-                    attitude_error(2), 0.0, -attitude_error(0),
-                    -attitude_error(1), attitude_error(0), 0.0;
+            ang_matrix <<   0.0,                -attitude_error(2), attitude_error(1),
+                            attitude_error(2),  0.0,                -attitude_error(0),
+                            -attitude_error(1), attitude_error(0),  0.0;
             ang_matrix *= -1.0;
 
             std::cout << " after computer C " << std::endl;
@@ -320,15 +315,14 @@ int main() {
                 std::cout << "\nvel_n x :" << vel_n.block(t, 0, 1, 3);
                 std::cout << "\n(I-ang_matrix).inverse() : "
                           << (2.0 * Eigen::Matrix3d::Identity() - ang_matrix).inverse()
-                        <<"\n (I-ang_matrix): " << (2.0 * Eigen::Matrix3d::Identity() - ang_matrix)
-                        <<"\n ang_matrix:" << ang_matrix
+                          << "\n (I-ang_matrix): " << (2.0 * Eigen::Matrix3d::Identity() - ang_matrix)
+                          << "\n ang_matrix:" << ang_matrix
                           << std::endl;
                 C = C_prev;
-             }
+            }
 
             vel_n.block(t, 0, 1, 3) = vel_n.block(t, 0, 1, 3) + vel_error.transpose();
             pose_n.block(t, 0, 1, 3) = pose_n.block(t, 0, 1, 3) + pos_error.transpose();
-
 
         }
 
@@ -338,15 +332,13 @@ int main() {
 
 
     for (int i(0); i < pose_n.rows() - 1; ++i) {
-        if (gyro_s.block(i, 0, 1, 3).norm() < gyro_threshold)// &&
-//                gyro_s.block(i+1,0,1,3).norm() > gyro_threshold)
-        {
+        if (gyro_s.block(i, 0, 1, 3).norm() < gyro_threshold) {
             std::cout << pose_n.block(i, 0, 1, 3) << std::endl;
         }
     }
 
 
-    // OUTPUT FILE
+    /// OUTPUT FILE
     std::ofstream out_file("./ResultData/out_result.txt");
     std::ofstream out_vel("./ResultData/out_vel.txt");
     std::ofstream out_acc("./ResultData/out_acc.txt");
