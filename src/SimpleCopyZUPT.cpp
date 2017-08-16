@@ -169,7 +169,7 @@ int main() {
                 std::cout << " inverse of 2*I-dt*ang_rate_matrix with nan " << std::endl;
                 C = C_prev;
             } else {
-//                C_prev = C;
+                C_prev = C;
             }
         }
 
