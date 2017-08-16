@@ -211,6 +211,7 @@ int main() {
 
 
         Eigen::Matrix3d S;
+        S.setZero();
         S << 0.0, -acc_n(t, 2), acc_n(t, 1),
                 acc_n(t, 2), 0.0, -acc_n(t, 0),
                 -acc_n(t, 1), acc_n(t, 0), 0.0;
