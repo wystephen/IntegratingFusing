@@ -301,7 +301,6 @@ int main() {
                             attitude_error(2),  0.0,                -attitude_error(0),
                             -attitude_error(1), attitude_error(0),  0.0;
             ang_matrix *= -1.0;
-
             std::cout << " after computer C " << std::endl;
 
             C = (2.0 * Eigen::Matrix3d::Identity() + ang_matrix) *

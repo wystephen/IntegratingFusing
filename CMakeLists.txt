@@ -142,7 +142,6 @@ target_link_libraries(
         ${Sophus_LIBRARIES} ${Sophus_LIBRARIES}
         ${G2O_LIBS} ${CSPARSE_LIBRARY}
         ${PYTHON_LIBRARIES}
-
 )
 
 add_executable(
@@ -155,7 +154,6 @@ target_link_libraries(
         ${Sophus_LIBRARIES} ${Sophus_LIBRARIES}
         ${G2O_LIBS} ${CSPARSE_LIBRARY}
         ${PYTHON_LIBRARIES}
-
 )
 #
 ## For test
