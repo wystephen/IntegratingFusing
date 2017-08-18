@@ -317,6 +317,7 @@ int main() {
                           << "\n (I-ang_matrix): " << (2.0 * Eigen::Matrix3d::Identity() - ang_matrix)
                           << "\n ang_matrix:" << ang_matrix
                           << std::endl;
+                std::cout << " current t :" << t << std::endl;
                 C = C_prev;
             }
 
