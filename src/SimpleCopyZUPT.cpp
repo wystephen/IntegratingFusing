@@ -273,7 +273,8 @@ int main() {
 
             if (std::isnan(K.sum())) {
                 std::cout << " t: " << t <<
-                          "\n K: " << K << std::endl;
+                          "\n K: " << K <<std::endl;
+                                       std::cout <<  std::endl;
             }
 
             std::cout << "k:" << K << std::endl;
