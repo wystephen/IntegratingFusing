@@ -273,8 +273,8 @@ int main() {
 
             if (std::isnan(K.sum())) {
                 std::cout << " t: " << t <<
-                          "\n K: " << K <<std::endl;
-                                       std::cout <<  std::endl;
+                          "\n K: " << K << std::endl;
+                std::cout << std::endl;
             }
 
             std::cout << "k:" << K << std::endl;
@@ -297,9 +297,9 @@ int main() {
             Eigen::Vector3d vel_error = delta_x.block(6, 0, 3, 1);
 
             Eigen::Matrix3d ang_matrix;
-            ang_matrix <<   0.0,                -attitude_error(2), attitude_error(1),
-                            attitude_error(2),  0.0,                -attitude_error(0),
-                            -attitude_error(1), attitude_error(0),  0.0;
+            ang_matrix << 0.0, -attitude_error(2), attitude_error(1),
+                    attitude_error(2), 0.0, -attitude_error(0),
+                    -attitude_error(1), attitude_error(0), 0.0;
             ang_matrix *= -1.0;
             std::cout << " after computer C " << std::endl;
 
