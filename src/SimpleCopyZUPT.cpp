@@ -265,9 +265,9 @@ int main() {
         if (gyro_s.block(t, 0, 1, 3).norm() < gyro_threshold) {
 
             // First detecter for data error
-            if (acc_n.block(t, 0, 1, 3).norm() > 10.0) {
-                std::cout << "t: " << t << " acc_n: " << acc_n.block(t, 0, 1, 3) << std::endl;
-            }
+//            if (acc_n.block(t, 0, 1, 3).norm() > 10.0) {
+//                std::cout << "t: " << t << " acc_n: " << acc_n.block(t, 0, 1, 3) << std::endl;
+//            }
             std::cout << "Begin zero velocity Update : " << t << std::endl;
 
             K = (P * H.transpose()) * (H * P * H.transpose() + R);
