@@ -156,6 +156,7 @@ int main() {
         //Skew-symmetric matrix for angular rates
 
         Eigen::Vector3d gyro_s1 = gyro_s.block(t, 0, 1, 3).transpose();
+        std::cout << "gyros:" << gyro_s1 << std::endl;
         Eigen::Matrix3d ang_rate_matrix;
         ang_rate_matrix.setZero();
         std::cout << "t: " << t
@@ -164,6 +165,7 @@ int main() {
             ang_rate_matrix << 0.0f, -gyro_s1(2), gyro_s1(1),
                     gyro_s1(2), 0.0f, -gyro_s1(0),
                     -gyro_s1(1), gyro_s1(0), 0.0f;
+
 
             C = C_prev * ((2.0 * Eigen::Matrix3d::Identity() + (dt * ang_rate_matrix)) *
                           (2.0 * Eigen::Matrix3d::Identity() - (dt * ang_rate_matrix)).inverse());
