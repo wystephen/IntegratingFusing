@@ -161,6 +161,7 @@ int main() {
         ang_rate_matrix.setZero();
         std::cout << "t: " << t
                   << "velocity: " << vel_n.block(t - 1, 0, 1, 3) << std::endl;
+                  
         if (gyro_s1.norm() > 1e-8) {
             ang_rate_matrix << 0.0f, -gyro_s1(2), gyro_s1(1),
                     gyro_s1(2), 0.0f, -gyro_s1(0),
