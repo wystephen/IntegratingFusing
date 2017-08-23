@@ -45,18 +45,9 @@ int main() {
         for (int j(0); j < imuM.GetCols(); ++j) {
             imu_data(i, j) = double(*(imuM(i, j)));
             if (0 < j < 4) {
-                imu_data(i, j) *= 9.81;//*9.81/9.64877;
-//              if(j==3)
-//              {
-//                  imu_data(i,j) *= -1.0f;
-//              }
+                imu_data(i, j) *= 9.81;
             } else if (4 <= j < 7) {
-//                imu_data(i, j) *= (180.0 / M_PI);
-                imu_data(i,j) *= (M_PI/180.0);
-//                if(j==6)
-//                {
-//                    imu_data(i,j) *= -1.0f;
-//                }
+                imu_data(i,j) *= (M_PI/180.0f);
             }
         }
 
@@ -77,7 +68,6 @@ int main() {
     SettingPara init_para(true);
 
     init_para.init_pos1_ = Eigen::Vector3d(0.0, 0.0, 0.0);
-//    init_para.init_heading1_ = 0.0 + 20 / 180.0 * M_PI;
     init_para.init_heading1_ = 0.0;// -2.0;//M_PI / 2.0;
 
     init_para.sigma_a_ *= 5.0;

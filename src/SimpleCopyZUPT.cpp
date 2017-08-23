@@ -161,7 +161,7 @@ int main() {
         ang_rate_matrix.setZero();
         std::cout << "t: " << t
                   << "velocity: " << vel_n.block(t - 1, 0, 1, 3) << std::endl;
-                  
+
         if (gyro_s1.norm() > 1e-8) {
             ang_rate_matrix << 0.0f, -gyro_s1(2), gyro_s1(1),
                     gyro_s1(2), 0.0f, -gyro_s1(0),
@@ -193,7 +193,7 @@ int main() {
 
         acc_n.block(t, 0, 1, 3) = (C * acc_s.block(t, 0, 1, 3).transpose().eval()).transpose();
 //        if (acc_n.block(t, 0, 1, 3).norm() > 300) {
-//            std::cout << "  acc_n error \n C : " << C << "\n accn : " << acc_n.block(t, 0, 1, 3) << " \n acc s: "
+//            std::cout << "  acc_n error \n C : " << C << "\n  accn : " << acc_n.block(t, 0, 1, 3) << " \n acc s: "
 //                      << acc_s.block(t, 0, 1, 3) << std::endl;
 //        }
 
