@@ -63,8 +63,8 @@ FIND_PACKAGE(G2O)
 FIND_PACKAGE(CSparse)
 
 include_directories(
-        ${EIGEN3_INCLUDE_DIR}
         ./include
+        ${EIGEN3_INCLUDE_DIR}
         /usr/local/cuda/include
         /home/steve/Cpp_Extent/Cpp_Extent
         ${PYTHON_INDCLUDE_PATH}
