@@ -4,7 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-data = np.loadtxt("/home/steve/Code/Mini-IMU/Scripts/IMUWB/46/imu.txt",
+data = np.loadtxt("/home/steve/Code/Mini_IMU/Scripts/IMUWB/46/imu.txt",
                   delimiter=',')
 
 plt.figure()
