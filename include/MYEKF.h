@@ -7,8 +7,7 @@
 #define QUICKFUSING_MYEKF_H
 
 
-#include "sophus/so3.h"
-#include "sophus/se3.h"
+//#include "Sophus/SO3.h"
 #include "SettingPara.h"
 
 
@@ -16,11 +15,6 @@
 
 class MyEkf {
 public:
-
-    /**
-     *
-     * @param para
-     */
     MyEkf(SettingPara para) {
 //        MYCHECK(1);
 
@@ -245,6 +239,7 @@ public:
                     qy = 0.25 * S;
                     qz = (R(1, 2) + R(2, 1)) / S;
                 } else {
+
                     S = sqrt(1 + R(2, 2) - R(0, 0) - R(1, 1)) * 2.0;
 
                     qw = (R(1, 0) - R(0, 1)) / S;
@@ -381,13 +376,13 @@ public:
             /*
              * Need not do any thing.
              */
-            quat_ = q;
+//            quat_ = q;
         }
 
 //        MYCHECK(1);
 
         //---------------
-        Eigen::Vector3d g_t(0, 0, 9.81);
+        Eigen::Vector3d g_t(0, 0, 9.8173);
 //        g_t = g_t.transpose();
 
         Eigen::Matrix3d Rb2t(q2dcm(quat_));
@@ -425,13 +420,6 @@ public:
         return y;
     }
 
-    /**
-     *
-     * @param q
-     * @param u
-     * @param dt
-     * @return
-     */
     bool StateMatrix(Eigen::Vector4d q, Eigen::VectorXd u, double dt) {
 
 //        MYCHECK(1);
@@ -479,13 +467,6 @@ public:
     }
 
 
-    /**
-     * Plus the error of obvious into the state.
-     * @param x_in current state in prior
-     * @param dx
-     * @param q_in current quantanien
-     * @return
-     */
     Eigen::VectorXd ComputeInternalState(Eigen::VectorXd x_in,
                                          Eigen::VectorXd dx,
                                          Eigen::VectorXd q_in) {
@@ -540,7 +521,6 @@ public:
 
             Eigen::MatrixXd K;
             K = P_ * H_.transpose().eval() * (H_ * P_ * H_.transpose().eval() + R_).inverse();
-//            K = P_ * H_.transpose() * R_.inverse();
 
             Eigen::VectorXd dx = K * z;
             dx_ = dx;
@@ -550,14 +530,12 @@ public:
             Id.setIdentity();
 
             P_ = (Id - K * H_) * P_;
-//            P_ = (Id-K_*H_)*P_*(Id-K_*H_).transpose() + K_ * R_ * K_.transpose();
 
             x_h_ = ComputeInternalState(x_h_, dx, quat_);
         }
 
 
-//        P_ = (P_.eval() * 0.5 + P_.transpose().eval() * 0.5);
-        P_ = (P_ + P_.transpose()) * 0.5;
+        P_ = (P_.eval() * 0.5 + P_.transpose().eval() * 0.5);
 
 
         /**
@@ -605,10 +583,6 @@ public:
         return x_h_;
     }
 
-    /**
-     *
-     * @return  angular in x-o-y plane,( unite is degree ).
-     */
     double getOriente() {
 //        Eigen::Vector2d avg_vec = std::partial_sum(heading_vec_deque_.begin(),
 //                                                   heading_vec_deque_.end(),
@@ -656,10 +630,19 @@ public:
         return avg_velocity / double(velocity_deque_.size());
     }
 
-
     /**
-     * @return The transform matrix at current moment.
+     *
+     * @return
      */
+//    double getDeltaVelocity(){
+//
+//        if(velocity_deque_.size()>5)
+//        {
+//
+//        }
+//
+//       return 0.0;
+//    }
     Eigen::Isometry3d getTransformation()
     {
         Eigen::Isometry3d transform = (Eigen::Isometry3d::Identity());
@@ -687,12 +670,10 @@ public:
         return transform;
     }
 
-public:
+
+private:
     //Parameters in here.
     SettingPara para_;
-private:
-
-
 
     //P for single foot
     Eigen::Matrix<double, 9, 9> P_;
