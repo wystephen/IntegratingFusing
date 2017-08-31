@@ -37,7 +37,7 @@ int main() {
 
 
     // INPUT FILE
-    std::string dir_name = "/home/steve/Code/Mini-IMU/Scripts/IMUWB/46/";
+    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/46/";
 
     CppExtent::CSVReader imuReader(dir_name + "imu.txt");
     CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
