@@ -26,16 +26,48 @@
 
 int main() {
 
+/**
+ * ...new data
+ */
+//    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/93/";
+//
+//    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
+//    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
+//
+//    auto imuM = imuReader.GetMatrix();
+//    auto zuptM = zuptReader.GetMatrix();
+//
+//    // Load data
+//
+//    Eigen::MatrixXd imu_data(imuM.GetRows(), imuM.GetCols());
+//    Eigen::MatrixXd zupt_data(zuptM.GetRows(), zuptM.GetCols());
+//
+//
+//    for (int i(0); i < imuM.GetRows(); ++i) {
+//        for (int j(0); j < imuM.GetCols(); ++j) {
+//            imu_data(i, j) = double(*(imuM(i, j)));
+//            if (0 < j < 4) {
+//                imu_data(i, j) *= 9.81;
+//            } else if (4 <= j < 7) {
+//                imu_data(i,j) *= (M_PI/180.0f);
+//            }
+//        }
+//
+//        zupt_data(i, 0) = *(zuptM(i, 0));
+//    }
+    /**
+     * End new data
+     */
 
-    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/93/";
+    std::string dir_name = "/home/steve/locate/5";
 
-    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
-    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
+//    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
+    CppExtent::CSVReader imuReader(dir_name + "ImuData.data.csv");
+//    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
+    CppExtent::CSVReader zuptReader(dir_name + "Zupt.data.csv");
 
     auto imuM = imuReader.GetMatrix();
     auto zuptM = zuptReader.GetMatrix();
-
-    // Load data
 
     Eigen::MatrixXd imu_data(imuM.GetRows(), imuM.GetCols());
     Eigen::MatrixXd zupt_data(zuptM.GetRows(), zuptM.GetCols());
@@ -44,17 +76,15 @@ int main() {
     for (int i(0); i < imuM.GetRows(); ++i) {
         for (int j(0); j < imuM.GetCols(); ++j) {
             imu_data(i, j) = double(*(imuM(i, j)));
-            if (0 < j < 4) {
-                imu_data(i, j) *= 9.81;
-            } else if (4 <= j < 7) {
-                imu_data(i,j) *= (M_PI/180.0f);
-            }
+//            if (0 < j < 4) {
+//                imu_data(i, j) *= 9.81;
+//            } else if (4 <= j < 7) {
+//                imu_data(i, j) *= (M_PI / 180.0f);
+//            }
         }
 
         zupt_data(i, 0) = *(zuptM(i, 0));
     }
-
-
 
 
     /**
@@ -77,9 +107,10 @@ int main() {
     init_para.sigma_acc_ *= 1.0;
     init_para.sigma_gyro_ *= 1.0;
 
-    init_para.Ts_ = 0.005f;//1.0/ 200.0;
+//    init_para.Ts_ = 0.005f;//1.0/ 200.0;
+    init_para.Ts_ = 1.0f/128.0f;//1.0/ 200.0;
 
-    MyEkf myekf(init_para);
+    EKFEigen myekf(init_para);
 
 
     myekf.InitNavEq(imu_data.block(10, 1, 40, 6));
