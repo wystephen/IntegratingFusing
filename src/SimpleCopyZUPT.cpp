@@ -37,10 +37,13 @@ int main() {
 
 
     // INPUT FILE
-    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/46/";
+//    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/46/";
+    std::string dir_name = "/home/steve/locate/5";
 
-    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
-    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
+//    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
+    CppExtent::CSVReader imuReader(dir_name + "ImuData.data.csv");
+//    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
+    CppExtent::CSVReader zuptReader(dir_name + "Zupt.data.csv");
 
     auto imuM = imuReader.GetMatrix();
     auto zuptM = zuptReader.GetMatrix();
@@ -52,11 +55,11 @@ int main() {
     for (int i(0); i < imuM.GetRows(); ++i) {
         for (int j(0); j < imuM.GetCols(); ++j) {
             imu_data(i, j) = double(*(imuM(i, j)));
-            if (0 < j < 4) {
-                imu_data(i, j) *= 9.81;
-            } else if (4 <= j < 7) {
-                imu_data(i, j) *= (M_PI / 180.0f);
-            }
+//            if (0 < j < 4) {
+//                imu_data(i, j) *= 9.81;
+//            } else if (4 <= j < 7) {
+//                imu_data(i, j) *= (M_PI / 180.0f);
+//            }
         }
 
         zupt_data(i, 0) = *(zuptM(i, 0));
