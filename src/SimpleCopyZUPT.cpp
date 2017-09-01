@@ -323,7 +323,7 @@ int main() {
                           << "\n ang_matrix:" << ang_matrix
                           << std::endl;
                 std::cout << " current t :" << t << std::endl;
-                C = C_prev;
+//                C = C_prev;
             }
 
             vel_n.block(t, 0, 1, 3) = vel_n.block(t, 0, 1, 3) + vel_error.transpose();
