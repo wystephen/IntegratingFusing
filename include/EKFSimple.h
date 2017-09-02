@@ -148,29 +148,11 @@ public:
                     alpha(2),0.0,-alpha(0),
                     -alpha(1),alpha(0),0.0;
 
-//            rotation_matrix_ = rotation_matrix_ * (Eigen::Matrix3d::Identity()-ang_rate_matrix);
 
 
-//            rotation_matrix_ = Eigen::pow()
-//            rotation_matrix_ = rotation_matrix_ * (2 * Eigen::Matrix3d::Identity() + (ang_rate_matrix ))
-//                               * (2 * Eigen::Matrix3d::Identity() - (ang_rate_matrix )).inverse();
 
             rotation_matrix_  = rotation_matrix_ * (cos(phi)*Eigen::Matrix3d::Identity()+
                     (1-cos(phi))*alpha*alpha.transpose()+sin(phi)*alpha_hat);
-//            rotation_matrix_ = rotation_matrix_ * (2.0*Eigen::Matrix3d::Identity())
-//                               + std::sin(w_tb.norm()) / w_tb.norm() * ang_rate_matrix
-//                    + (1 - cos(w_tb.norm())) / w_tb.norm() / w_tb.norm() * ang_rate_matrix * ang_rate_matrix
-//            ;
-
-
-
-
-
-
-
-//            y(6) = SO3_rotation_.log()(0);
-//            y(7) = SO3_rotation_.log()(1);
-//            y(8) = SO3_rotation_.log()(2);
 
 
         } else {

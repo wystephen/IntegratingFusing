@@ -103,9 +103,6 @@ int main() {
     init_para.init_pos1_ = Eigen::Vector3d(0.0, 0.0, 0.0);
     init_para.init_heading1_ = 0.0;// -2.0;//M_PI / 2.0;
 
-    init_para.sigma_a_ *= 5.0;
-
-    init_para.sigma_g_ *= 5.0;
 
     init_para.sigma_acc_ *= 1.0;
     init_para.sigma_gyro_ *= 1.0;
@@ -125,7 +122,6 @@ int main() {
 //            myekf.para_.Ts_ = imu_data(i,0)-imu_data(i-1,0);
 //        }
 
-//        std::cout << init_para.Ts_ << std::endl;
         Eigen::VectorXd vec = myekf.GetPosition(imu_data.block(i, 1, 1, 6).transpose(),
                                                 zupt_data(i, 0));
 //        std::cout << imu_data.block(i,1,1,6) << std::endl;
@@ -143,8 +139,8 @@ int main() {
 
         if ((zupt_data.rows()-2)>i&& i > 1 && zupt_data(i, 0) > 0.5 && zupt_data(i + 1, 0) < 0.5) {
             out_file << vec(0) << " " << vec(1) << " " << vec(2) << std::endl;
-            std::cout << vec(0) << " " << vec(1) << " " << vec(2) << " "
-                      << vec(3) << " " << vec(4) << " " << vec(5) << std::endl;
+//            std::cout << vec(0) << " " << vec(1) << " " << vec(2) << " "
+//                      << vec(3) << " " << vec(4) << " " << vec(5) << std::endl;
         }
     }
 

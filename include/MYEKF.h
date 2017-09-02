@@ -624,7 +624,7 @@ public:
     double getVelocity() {
         if (velocity_deque_.size() == 0) return 0.0;
         double avg_velocity(0.0);
-        for (int i(0); i < velocity_deque_.size(); ++i) {
+        for (int i(0); i < (velocity_deque_.size()); ++i) {
             avg_velocity += velocity_deque_.at(i);
         }
         return avg_velocity / double(velocity_deque_.size());

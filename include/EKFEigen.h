@@ -66,7 +66,7 @@ public:
         double roll(std::atan2(-f_v, -f_w));
         double pitch(std::atan2(f_u, std::sqrt(f_v * f_v + f_w * f_w)));
 
-        SO3_rotation_ = Sophus::SO3(Ang2RotMatrix(Eigen::Vector3d(roll, pitch, 0.0)));
+        SO3_rotation_ = Sophus::SO3(Ang2RotMatrix(Eigen::Vector3d(roll, pitch, para_.init_heading1_)));
 
         Eigen::Vector3d tmp_acc(f_u, f_v, f_w);
 
@@ -145,8 +145,8 @@ public:
      * @param dt: time interval
      * @return new state of IMu(x,y,z,vx,vy,vz)[rotation matrix is a global value]
      */
-    Eigen::VectorXd NavigationEquation(Eigen::VectorXd x_h,
-                                       Eigen::VectorXd u,
+    Eigen::VectorXd NavigationEquation(const Eigen::VectorXd &x_h,
+                                       const Eigen::VectorXd &u,
                                        double dt) {
 
 
@@ -164,9 +164,7 @@ public:
             SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
         }
 
-
-
-        Eigen::Vector3d g_t(0, 0, para_.gravity_);//.81);
+        Eigen::Vector3d g_t(0.0, 0.0, para_.gravity_);//.81);
 
         Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
         Eigen::MatrixXd f_t(Rb2t * (u.block(0, 0, 3, 1)));
@@ -189,7 +187,7 @@ public:
     * @param dt
     * @return
     */
-    bool StateMatrix(Eigen::VectorXd u, double dt) {
+    bool StateMatrix(cosnt Eigen::VectorXd &u, double dt) {
 
 //        MYCHECK(1);
 
@@ -243,8 +241,8 @@ public:
      * @param dx
      * @return
      */
-    Eigen::VectorXd ComputeInternalState(Eigen::VectorXd x_in,
-                                         Eigen::VectorXd dx) {
+    Eigen::VectorXd ComputeInternalState(const Eigen::VectorXd &x_in,
+                                         const Eigen::VectorXd &dx) {
 
 
         Eigen::VectorXd x_out = x_in + dx;
