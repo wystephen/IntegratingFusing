@@ -148,7 +148,6 @@ public:
                                        Eigen::VectorXd u,
                                        double dt) {
 
-//        MYCHECK(1);
 
 
         Eigen::VectorXd y;
@@ -157,8 +156,8 @@ public:
         y = x_h;
 
         Eigen::Vector3d w_tb(u(3), u(4), u(5));
+        w_tb *= dt; // \delta \omega
 
-        w_tb *= dt;
         if (w_tb.norm() > 1e-18) {
 
             SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
@@ -166,14 +165,13 @@ public:
 
 
 
-        //---------------
         Eigen::Vector3d g_t(0, 0, para_.gravity_);//.81);
 
         Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
         Eigen::MatrixXd f_t(Rb2t * (u.block(0, 0, 3, 1)));
 
         Eigen::Vector3d acc_t(f_t + g_t);
-        std::cout << "acc t :" << acc_t.transpose() << std::endl;
+//        std::cout << "acc t :" << acc_t.transpose() << std::endl;
 
         y.block(3, 0, 3, 1) += acc_t * dt;
         y.block(0, 0, 3, 1) += y.block(3, 0, 3, 1) * dt + 0.5 * acc_t * dt * dt;
@@ -239,10 +237,9 @@ public:
 
 
     /**
-     * Plus the error of obvious into the state.
-     * @param x_in current state in prior
+     * Correct system state according to dx
+     * @param x_in
      * @param dx
-     * @param q_in current quantanien
      * @return
      */
     Eigen::VectorXd ComputeInternalState(Eigen::VectorXd x_in,
@@ -255,17 +252,23 @@ public:
 
 
         SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
-//        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(epsilon);
 
-//        x_out(6)= SO3_rotation_.log()(0);
-//        x_out(7) = SO3_rotation_.log()(1);
-//        x_out(8) = SO3_rotation_.log()(2);
+        x_out(6)= SO3_rotation_.log()(0);
+        x_out(7) = SO3_rotation_.log()(1);
+        x_out(8) = SO3_rotation_.log()(2);
 
 
         return x_out;
 
     }
 
+
+    /**
+     * interface for use,
+     * @param u
+     * @param zupt1
+     * @return x_h_ (x,y,z,vx,vy,vz,\theta x,\theta y,\theta z)
+     */
     Eigen::VectorXd GetPosition(Eigen::VectorXd u, double zupt1) {
 
 
@@ -298,6 +301,8 @@ public:
         P_ = (P_ * 0.5 + P_.transpose().eval() * 0.5);
 
         if (std::isnan(P_(0, 0))) {
+
+            std::cout << "Warning: P is Nan" << std::endl;
             P_ = last_P_;
         }
 
@@ -305,6 +310,11 @@ public:
         return x_h_;
     }
 
+    /**
+     * Euler angle to rotation matrix.
+     * @param ang
+     * @return
+     */
     inline Eigen::Matrix3d Ang2RotMatrix(Eigen::Vector3d ang) {
         double cr(cos(ang(0)));
         double sr(sin(ang(0)));
@@ -352,23 +362,22 @@ private:
 
 
 
-//    Eigen::Vector4d quat_;
 
-//    Eigen::Quaterniond quaterniond_;
+    Sophus::SO3 SO3_rotation_; // rotation matrix of current state of imu.
 
-    Sophus::SO3 SO3_rotation_;
-
-    Eigen::MatrixXd dx_;
+    Eigen::MatrixXd dx_; // save the difference between observation value(zero-velocity) and system state(velocity)
 
 
+    /**
+     * for debug.
+     */
     std::deque<Eigen::Vector2d> heading_vec_deque_;
     std::deque<double> velocity_deque_;
     int count_move_times_ = 0;
 
-
     Eigen::VectorXd last_chage_state_;
-
     bool last_zupt_ = true;
+
 };
 
 #endif //INTEGRATINGFUSING_EKFEIGEN_H
