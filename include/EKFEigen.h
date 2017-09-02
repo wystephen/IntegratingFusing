@@ -251,9 +251,9 @@ public:
 
         SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
 
-        x_out(6) = SO3_rotation_.log()(0);
-        x_out(7) = SO3_rotation_.log()(1);
-        x_out(8) = SO3_rotation_.log()(2);
+//        x_out(6) = SO3_rotation_.log()(0);
+//        x_out(7) = SO3_rotation_.log()(1);
+//        x_out(8) = SO3_rotation_.log()(2);
 
 
         return x_out;
