@@ -71,19 +71,20 @@ public:
         Eigen::Vector3d tmp_acc(f_u, f_v, f_w);
 
 //        /// LOOP TO GET RIGHT ANGLE
+//        for (int it(0); it < 200; ++it) {
+//            double r(atan(tmp_acc(1) / tmp_acc(2))),
+//                    p(atan(tmp_acc(0) / std::sqrt(tmp_acc(1) * tmp_acc(1) + tmp_acc(2) * tmp_acc(2))));
+//            if (fabs(r) < 0.02 && fabs(p) < 0.02) {
+//                break;
+//            } else {
+//                Sophus::SO3 tmp_so3 = Sophus::SO3(r, p, 0.0);
+//                SO3_rotation_ = tmp_so3 * SO3_rotation_;
+//                tmp_acc = SO3_rotation_.matrix() * tmp_acc;
+//            }
 //
-        for (int it(0); it < 200; ++it) {
-            double r(atan(tmp_acc(1) / tmp_acc(2))),
-                    p(atan(tmp_acc(0) / std::sqrt(tmp_acc(1) * tmp_acc(1) + tmp_acc(2) * tmp_acc(2))));
-            if (fabs(r) < 0.02 && fabs(p) < 0.02) {
-                break;
-            } else {
-                Sophus::SO3 tmp_so3 = Sophus::SO3(r, p, 0.0);
-                SO3_rotation_ = tmp_so3 * SO3_rotation_;
-                tmp_acc = SO3_rotation_.matrix() * tmp_acc;
-            }
+//        }
+//
 
-        }
         Eigen::Vector3d attitude(SO3_rotation_.log()(0),
                                  SO3_rotation_.log()(1),
                                  SO3_rotation_.log()(2));
