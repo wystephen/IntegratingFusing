@@ -50,6 +50,15 @@ find_package(Pangolin 0.2 QUIET)
 #    set(HAS_PANGOLIN 0)
 #endif ()
 
+# Find GTSAM components
+find_package(GTSAM REQUIRED) # Uses installed package
+include_directories(${GTSAM_INCLUDE_DIR})
+set(GTSAM_LIBRARIES gtsam)   # TODO: automatic search libs
+
+find_package(GTSAMCMakeTools)
+include(GtsamMakeConfigFile)
+include(GtsamBuildTypes)
+include(GtsamTesting)
 
 if (OPENMP_FOUND)
     message("OPENMP FOUND")

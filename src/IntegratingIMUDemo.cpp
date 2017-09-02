@@ -112,6 +112,8 @@ int main() {
 
 //    init_para.Ts_ = 0.005f;//1.0/ 200.0;
     init_para.Ts_ = 1.0f/128.0f;//1.0/ 200.0;
+    
+    init_para.gravity_ = 9.8;
 
     EKFEigen myekf(init_para);
 

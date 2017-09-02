@@ -63,13 +63,13 @@ public:
         }
 
         t_norm /= u.rows();
-        own_g_ = t_norm;
-        std::cout << __FILE__ << ":" << __LINE__ << ":" << "own g :" << own_g_ << std::endl;
+//        own_g_ = t_norm;
+//        std::cout << __FILE__ << ":" << __LINE__ << ":" << "own g :" << own_g_ << std::endl;
         double roll(std::atan2(-f_v, -f_w));
         double pitch(std::atan2(f_u, std::sqrt(f_v * f_v + f_w * f_w)));
 //        double roll(std::atan2(-f_v, -std::sqrt(f_w * f_w + f_u * f_u))),
 //                pitch(std::atan2(-f_u, -std::sqrt(f_v * f_v + f_w * f_w)));
-        SO3_rotation_ = Sophus::SO3(Ang2RotMatrix(Eigen::Vector3d(roll,pitch,0.0)));
+        SO3_rotation_ = Sophus::SO3(Ang2RotMatrix(Eigen::Vector3d(roll, pitch, 0.0)));
 //        SO3_rotation_ = Sophus::SO3(roll,pitch,0.0);
 //        SO3_rotation_ =  Sophus::SO3::exp(Eigen::Vector3d(0.0, pitch, 0.0))*SO3_rotation_;
 //        SO3_rotation_.
@@ -99,7 +99,7 @@ public:
                                  SO3_rotation_.log()(1),
                                  SO3_rotation_.log()(2));
         std::cout << "attitude :" << attitude.transpose() << std::endl;
-        std::cout << "SO3 "<< SO3_rotation_ << std::endl;
+        std::cout << "SO3 " << SO3_rotation_ << std::endl;
         tmp_acc = Eigen::Vector3d(f_u, f_v, f_w);
         Eigen::Matrix3d tm = SO3_rotation_.matrix();
         tm = tm.transpose().eval();
@@ -159,30 +159,27 @@ public:
         Eigen::Vector3d w_tb(u(3), u(4), u(5));
 
         w_tb *= dt;
-//        if (w_tb.norm() > 1e-18) {
+        if (w_tb.norm() > 1e-18) {
 
-//            SO3_rotation_ = Sophus::SO3::exp(w_tb) * SO3_rotation_;
-        SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
-//        }
+            SO3_rotation_ = SO3_rotation_ * Sophus::SO3::exp(w_tb);
+        }
 
 
 
         //---------------
-        Eigen::Vector3d g_t(0, 0, 9.8173);//.81);
+        Eigen::Vector3d g_t(0, 0, para_.gravity_);//.81);
 
         Eigen::Matrix3d Rb2t = SO3_rotation_.matrix();
-//        std::cout << "Rt2t:" << Rb2t << std::endl;
         Eigen::MatrixXd f_t(Rb2t * (u.block(0, 0, 3, 1)));
 
         Eigen::Vector3d acc_t(f_t + g_t);
         std::cout << "acc t :" << acc_t.transpose() << std::endl;
 
-        y.block(3,0,3,1) += acc_t*dt;
-        y.block(0,0,3,1) += y.block(3,0,3,1)*dt + 0.5 * acc_t * dt*dt;
+        y.block(3, 0, 3, 1) += acc_t * dt;
+        y.block(0, 0, 3, 1) += y.block(3, 0, 3, 1) * dt + 0.5 * acc_t * dt * dt;
 
 
         x_h_ = y;
-//        MYCHECK(1);
         return y;
     }
 
@@ -300,8 +297,7 @@ public:
 
         P_ = (P_ * 0.5 + P_.transpose().eval() * 0.5);
 
-        if(std::isnan(P_(0,0)))
-        {
+        if (std::isnan(P_(0, 0))) {
             P_ = last_P_;
         }
 
@@ -333,13 +329,13 @@ public:
     SettingPara para_;
 private:
 
-    double own_g_ = 9.81;
+//    double own_g_ = 9.81;
 
 
     //P for single foot
     Eigen::Matrix<double, 9, 9> P_;
 
-    Eigen::Matrix<double,9,9> last_P_ = Eigen::Matrix<double,9,9>::Identity();// C++11 is needed...
+    Eigen::Matrix<double, 9, 9> last_P_ = Eigen::Matrix<double, 9, 9>::Identity();// C++11 is needed...
 
     Eigen::Matrix<double, 6, 6> Q_;
 
