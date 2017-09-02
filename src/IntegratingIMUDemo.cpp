@@ -59,7 +59,7 @@ int main() {
      * End new data
      */
 
-    std::string dir_name = "/home/steve/locate/4";
+    std::string dir_name = "/home/steve/locate/3";
 //    std::string dir_name = "/home/steve/XsensData/1";
 
 //    CppExtent::CSVReader imuReader(dir_name + "imu.txt");

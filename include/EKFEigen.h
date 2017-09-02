@@ -150,7 +150,6 @@ public:
                                        double dt) {
 
 
-
         Eigen::VectorXd y;
         y.resize(9);
         y.setZero();
@@ -173,7 +172,7 @@ public:
 //        std::cout << "acc t :" << acc_t.transpose() << std::endl;
 
         y.block(3, 0, 3, 1) += acc_t * dt;
-        y.block(0, 0, 3, 1) += y.block(3, 0, 3, 1) * dt + 0.5 * acc_t * dt * dt;
+        y.block(0, 0, 3, 1) += y.block(3, 0, 3, 1) * dt;// + 0.5 * acc_t * dt * dt;
 
 
         x_h_ = y;
@@ -187,7 +186,7 @@ public:
     * @param dt
     * @return
     */
-    bool StateMatrix(cosnt Eigen::VectorXd &u, double dt) {
+    bool StateMatrix(const Eigen::VectorXd &u, double dt) {
 
 //        MYCHECK(1);
 
@@ -242,7 +241,7 @@ public:
      * @return
      */
     Eigen::VectorXd ComputeInternalState(const Eigen::VectorXd &x_in,
-                                         const Eigen::VectorXd &dx) {
+                                         Eigen::VectorXd &dx) {
 
 
         Eigen::VectorXd x_out = x_in + dx;
@@ -252,7 +251,7 @@ public:
 
         SO3_rotation_ = Sophus::SO3::exp(epsilon) * SO3_rotation_;
 
-        x_out(6)= SO3_rotation_.log()(0);
+        x_out(6) = SO3_rotation_.log()(0);
         x_out(7) = SO3_rotation_.log()(1);
         x_out(8) = SO3_rotation_.log()(2);
 
@@ -268,7 +267,8 @@ public:
      * @param zupt1
      * @return x_h_ (x,y,z,vx,vy,vz,\theta x,\theta y,\theta z)
      */
-    Eigen::VectorXd GetPosition(Eigen::VectorXd u, double zupt1) {
+    Eigen::VectorXd GetPosition(const Eigen::VectorXd &u,
+                                const double &zupt1) {
 
 
         last_P_ = P_;
@@ -360,11 +360,9 @@ private:
     Eigen::MatrixXd K_;
 
 
-
-
     Sophus::SO3 SO3_rotation_; // rotation matrix of current state of imu.
 
-    Eigen::MatrixXd dx_; // save the difference between observation value(zero-velocity) and system state(velocity)
+    Eigen::Matrix<double, 9, 1> dx_; // save the difference between observation value(zero-velocity) and system state(velocity)
 
 
     /**
