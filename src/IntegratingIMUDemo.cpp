@@ -112,7 +112,7 @@ int main() {
     
     init_para.gravity_ = 9.8;
 
-    EKFEigen myekf(init_para);
+    MyEkf myekf(init_para);
 
 
     myekf.InitNavEq(imu_data.block(10, 1, 40, 6));
