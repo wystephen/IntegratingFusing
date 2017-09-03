@@ -59,15 +59,15 @@ int main() {
      * End new data
      */
 
-    std::string dir_name = "/home/steve/locate/3";
-//    std::string dir_name = "/home/steve/XsensData/1";
+//    std::string dir_name = "/home/steve/locate/3";
+    std::string dir_name = "/home/steve/XsensData/1";
 
 //    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
-    CppExtent::CSVReader imuReader(dir_name + "ImuData.data.csv");
-//    CppExtent::CSVReader imuReader(dir_name + "Imu.csv");
+//    CppExtent::CSVReader imuReader(dir_name + "ImuData.data.csv");
+    CppExtent::CSVReader imuReader(dir_name + "Imu.csv");
 //    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
-    CppExtent::CSVReader zuptReader(dir_name + "Zupt.data.csv");
-//    CppExtent::CSVReader zuptReader(dir_name + "Zupt.csv");
+//    CppExtent::CSVReader zuptReader(dir_name + "Zupt.data.csv");
+    CppExtent::CSVReader zuptReader(dir_name + "Zupt.csv");
 
     auto imuM = imuReader.GetMatrix();
     auto zuptM = zuptReader.GetMatrix();
