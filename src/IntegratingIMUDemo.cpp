@@ -61,12 +61,15 @@ int main() {
 
 //    std::string dir_name = "/home/steve/locate/3";
     std::string dir_name = "/home/steve/XsensData/1";
+//    std::string dir_name = "/home/steve/XsensData/";
 
 //    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
 //    CppExtent::CSVReader imuReader(dir_name + "ImuData.data.csv");
+//    CppExtent::CSVReader imuReader(dir_name + "sim_imu.csv");
     CppExtent::CSVReader imuReader(dir_name + "Imu.csv");
 //    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
 //    CppExtent::CSVReader zuptReader(dir_name + "Zupt.data.csv");
+//    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
     CppExtent::CSVReader zuptReader(dir_name + "Zupt.csv");
 
     auto imuM = imuReader.GetMatrix();
@@ -104,18 +107,23 @@ int main() {
     init_para.init_heading1_ = 0.0;// -2.0;//M_PI / 2.0;
 
 
-    init_para.sigma_acc_ *= 1.0;
-    init_para.sigma_gyro_ *= 1.0;
+    init_para.sigma_acc_ = 0.5 * Eigen::Vector3d(1,1,1);
+    init_para.sigma_gyro_= 0.5 * Eigen::Vector3d(1,1,1) * M_PI / 180.0;
+
+    init_para.sigma_initial_pos1_ *= 1e-3;
+//    init_para.sigma_initial_vel1_ *=
+    init_para.sigma_initial_att1_ = Eigen::Vector3d(0.1,0.1,0.1) * M_PI / 180.0;
 
 //    init_para.Ts_ = 0.005f;//1.0/ 200.0;
-    init_para.Ts_ = 1.0f/128.0f;//1.0/ 200.0;
+//    init_para.Ts_ = 1.0f/100.0f;//1.0/ 200.0;
+    init_para.Ts_ = 1.0f / 100.0f;
     
     init_para.gravity_ = 9.8;
 
     MyEkf myekf(init_para);
 
 
-    myekf.InitNavEq(imu_data.block(10, 1, 40, 6));
+    myekf.InitNavEq(imu_data.block(1, 1, 40, 6));
     for (int i(0); i < imu_data.rows(); ++i) {
 //        if(i>1)
 //        {
