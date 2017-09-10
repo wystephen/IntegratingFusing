@@ -33,7 +33,8 @@ int main() {
 /**
  * ...new data
  */
-    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/93/";
+    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/92/";
+//    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/93/";
 
     CppExtent::CSVReader imuReader(dir_name + "imu.txt");
     CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
@@ -50,9 +51,9 @@ int main() {
     for (int i(0); i < imuM.GetRows(); ++i) {
         for (int j(0); j < imuM.GetCols(); ++j) {
             imu_data(i, j) = double(*(imuM(i, j)));
-            if (0 < j < 4) {
+            if (0 < j&& j < 4) {
                 imu_data(i, j) *= 9.81;
-            } else if (4 <= j < 7) {
+            } else if (4 <= j && j< 7) {
                 imu_data(i,j) *= (M_PI/180.0f);
             }
         }
@@ -120,7 +121,7 @@ int main() {
 
 //    init_para.Ts_ = 0.005f;//1.0/ 200.0;
 //    init_para.Ts_ = 1.0f/100.0f;//1.0/ 200.0;
-    init_para.Ts_ = 1.0f / 100.0f;
+    init_para.Ts_ = 1.0f / 200.0f;
     
     init_para.gravity_ = 9.8;
 
@@ -170,8 +171,8 @@ int main() {
     out_file.close();
     out_axis.close();
 
-//    plt::plot(gx,gy,"r-+");
-    plt::plot(zupt_v,"b-*");
+    plt::plot(gx,gy,"r-+");
+//    plt::plot(zupt_v,"b-*");
     plt::show();
 
 
