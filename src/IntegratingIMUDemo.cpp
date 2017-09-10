@@ -24,56 +24,24 @@
 #include "EKFEigen.h"
 //#include <pangolin/pangolin.h>
 
+#include <matplotlib_interface.h>
+
+namespace plt=matplotlibcpp;
+
 int main() {
 
 /**
  * ...new data
  */
-//    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/93/";
-//
-//    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
-//    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
-//
-//    auto imuM = imuReader.GetMatrix();
-//    auto zuptM = zuptReader.GetMatrix();
-//
-//    // Load data
-//
-//    Eigen::MatrixXd imu_data(imuM.GetRows(), imuM.GetCols());
-//    Eigen::MatrixXd zupt_data(zuptM.GetRows(), zuptM.GetCols());
-//
-//
-//    for (int i(0); i < imuM.GetRows(); ++i) {
-//        for (int j(0); j < imuM.GetCols(); ++j) {
-//            imu_data(i, j) = double(*(imuM(i, j)));
-//            if (0 < j < 4) {
-//                imu_data(i, j) *= 9.81;
-//            } else if (4 <= j < 7) {
-//                imu_data(i,j) *= (M_PI/180.0f);
-//            }
-//        }
-//
-//        zupt_data(i, 0) = *(zuptM(i, 0));
-//    }
-    /**
-     * End new data
-     */
+    std::string dir_name = "/home/steve/Code/Mini_IMU/Scripts/IMUWB/93/";
 
-//    std::string dir_name = "/home/steve/locate/3";
-    std::string dir_name = "/home/steve/XsensData/1";
-//    std::string dir_name = "/home/steve/XsensData/";
-
-//    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
-//    CppExtent::CSVReader imuReader(dir_name + "ImuData.data.csv");
-//    CppExtent::CSVReader imuReader(dir_name + "sim_imu.csv");
-    CppExtent::CSVReader imuReader(dir_name + "Imu.csv");
-//    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
-//    CppExtent::CSVReader zuptReader(dir_name + "Zupt.data.csv");
-//    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
-    CppExtent::CSVReader zuptReader(dir_name + "Zupt.csv");
+    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
+    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
 
     auto imuM = imuReader.GetMatrix();
     auto zuptM = zuptReader.GetMatrix();
+
+    // Load data
 
     Eigen::MatrixXd imu_data(imuM.GetRows(), imuM.GetCols());
     Eigen::MatrixXd zupt_data(zuptM.GetRows(), zuptM.GetCols());
@@ -82,15 +50,51 @@ int main() {
     for (int i(0); i < imuM.GetRows(); ++i) {
         for (int j(0); j < imuM.GetCols(); ++j) {
             imu_data(i, j) = double(*(imuM(i, j)));
-//            if (0 < j < 4) {
-//                imu_data(i, j) *= 9.81;
-//            } else if (4 <= j < 7) {
-//                imu_data(i, j) *= (M_PI / 180.0f);
-//            }
+            if (0 < j < 4) {
+                imu_data(i, j) *= 9.81;
+            } else if (4 <= j < 7) {
+                imu_data(i,j) *= (M_PI/180.0f);
+            }
         }
 
         zupt_data(i, 0) = *(zuptM(i, 0));
     }
+    /**
+     * End new data
+     */
+//
+////    std::string dir_name = "/home/steve/locate/3";
+//    std::string dir_name = "/home/steve/XsensData/1";
+////    std::string dir_name = "/home/steve/XsensData/";
+//
+////    CppExtent::CSVReader imuReader(dir_name + "imu.txt");
+////    CppExtent::CSVReader imuReader(dir_name + "ImuData.data.csv");
+////    CppExtent::CSVReader imuReader(dir_name + "sim_imu.csv");
+//    CppExtent::CSVReader imuReader(dir_name + "Imu.csv");
+////    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
+////    CppExtent::CSVReader zuptReader(dir_name + "Zupt.data.csv");
+////    CppExtent::CSVReader zuptReader(dir_name + "sim_zupt.csv");
+//    CppExtent::CSVReader zuptReader(dir_name + "Zupt.csv");
+//
+//    auto imuM = imuReader.GetMatrix();
+//    auto zuptM = zuptReader.GetMatrix();
+//
+//    Eigen::MatrixXd imu_data(imuM.GetRows(), imuM.GetCols());
+//    Eigen::MatrixXd zupt_data(zuptM.GetRows(), zuptM.GetCols());
+
+//
+//    for (int i(0); i < imuM.GetRows(); ++i) {
+//        for (int j(0); j < imuM.GetCols(); ++j) {
+//            imu_data(i, j) = double(*(imuM(i, j)));
+////            if (0 < j < 4) {
+////                imu_data(i, j) *= 9.81;
+////            } else if (4 <= j < 7) {
+////                imu_data(i, j) *= (M_PI / 180.0f);
+////            }
+//        }
+//
+//        zupt_data(i, 0) = *(zuptM(i, 0));
+//    }
 
 
     /**
@@ -122,6 +126,7 @@ int main() {
 
     MyEkf myekf(init_para);
 
+    std::vector<double> gx,gy,gz,zupt_v;
 
     myekf.InitNavEq(imu_data.block(1, 1, 40, 6));
     for (int i(0); i < imu_data.rows(); ++i) {
@@ -129,6 +134,7 @@ int main() {
 //        {
 //            myekf.para_.Ts_ = imu_data(i,0)-imu_data(i-1,0);
 //        }
+        zupt_v.push_back(zupt_data(i,0));
 
         Eigen::VectorXd vec = myekf.GetPosition(imu_data.block(i, 1, 1, 6).transpose(),
                                                 zupt_data(i, 0));
@@ -149,6 +155,9 @@ int main() {
             out_file << vec(0) << " " << vec(1) << " " << vec(2) << std::endl;
 //            std::cout << vec(0) << " " << vec(1) << " " << vec(2) << " "
 //                      << vec(3) << " " << vec(4) << " " << vec(5) << std::endl;
+            gx.push_back(vec(0));
+            gy.push_back(vec(1));
+            gz.push_back(vec(2));
         }
     }
 
@@ -160,6 +169,10 @@ int main() {
 
     out_file.close();
     out_axis.close();
+
+//    plt::plot(gx,gy,"r-+");
+    plt::plot(zupt_v,"b-*");
+    plt::show();
 
 
 }
