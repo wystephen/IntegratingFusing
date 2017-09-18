@@ -581,6 +581,14 @@ public:
 
         if(std::isnan(x_h_.sum()))
         {
+            if(!std::isnan(x_h_.block(0,0,6,1).sum())
+               &&std::isnan(x_h_.block(6,0,3,1).sum()))
+            {
+                Eigen::Quaterniond quaterniond(quat_(3),quat_(0),quat_(1),quat_(2));
+//                quaterniond.
+                Sophus::SO3 so3(quaterniond);
+                x_h_.block(6,0,3,1) = so3.log();
+            }
             std::cout << "x_h_:" << x_h_ << std::endl;
         }
 
@@ -691,10 +699,10 @@ private:
 
     Eigen::Matrix<double, 9, 1> x_h_;
 
-    Eigen::MatrixXd F_;
-    Eigen::MatrixXd G_;
+    Eigen::Matrix<double,9,9> F_;
+    Eigen::Matrix<double,9,6> G_;
 
-    Eigen::MatrixXd K_;
+    Eigen::Matrix<double,9,3> K_;
 
 
     Eigen::Vector4d quat_;
