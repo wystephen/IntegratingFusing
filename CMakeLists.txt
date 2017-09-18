@@ -88,14 +88,13 @@ include_directories(
 )
 
 
-
 link_directories(
         /usr/local/lib/
         /usr/lib/
         /usr/lib/x86_64-linux-gnu/
         ${BLAS_LIBRARIES}
         ${LAPACK_LIBRARIES}
-#        ./include
+        #        ./include
 )
 
 
@@ -110,8 +109,7 @@ SET(G2O_LIBS g2o_cli g2o_ext_freeglut_minimal g2o_simulator
 set(Sophus_LIBRARIES libSophus.so)
 
 
-
-add_executable(IntegratingIMU src/IntegratingIMUDemo.cpp )
+add_executable(IntegratingIMU src/IntegratingIMUDemo.cpp)
 target_link_libraries(IntegratingIMU
         ${Pangolin_LIBRARIES}
         ${Sophus_LIBRARIES} ${Sophus_LIBRARIES}
@@ -141,6 +139,19 @@ target_link_libraries(
         ${PYTHON_LIBRARIES}
 )
 
+#message("kkk")
+#message(${EIGEN3_INCLUDE_DIR})
+##message(/usr/local/cuda/include)
+##message(/home/steve/Cpp_Extent/Cpp_Extent)
+#message(${PYTHON_INDCLUDE_PATH})
+##message(/usr/include)
+#message(/usr/local/include)
+#message(${Sophus_INCLUDE_DIRS})
+#message(${BLAS_INCLUDE_DIRS})
+#message(/usr/local/include)
+#message(${CSPARSE_INCLUDE_DIR})
+#message(${G2O_INCLUDE_DIR})
+#message(${Pangolin_INCLUDE_DIRS})
 
 add_executable(
         AxisTestForSophus
@@ -149,7 +160,7 @@ add_executable(
 
 target_link_libraries(
         AxisTestForSophus
-         ${Pangolin_LIBRARIES}
+        ${Pangolin_LIBRARIES}
         ${Sophus_LIBRARIES} ${Sophus_LIBRARIES}
         ${G2O_LIBS} ${CSPARSE_LIBRARY}
         ${PYTHON_LIBRARIES}
@@ -161,7 +172,7 @@ add_executable(
 )
 target_link_libraries(
         SimpleZUPT
-         ${Pangolin_LIBRARIES}
+        ${Pangolin_LIBRARIES}
         ${Sophus_LIBRARIES} ${Sophus_LIBRARIES}
         ${G2O_LIBS} ${CSPARSE_LIBRARY}
         ${PYTHON_LIBRARIES}

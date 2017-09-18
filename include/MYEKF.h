@@ -579,6 +579,11 @@ public:
             last_zupt_ = false;
         }
 
+        if(std::isnan(x_h_.sum()))
+        {
+            std::cout << "x_h_:" << x_h_ << std::endl;
+        }
+
 
         return x_h_;
     }
