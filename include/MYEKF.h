@@ -504,6 +504,12 @@ public:
 
     }
 
+    /**
+     *
+     * @param u
+     * @param zupt1
+     * @return
+     */
     Eigen::VectorXd GetPosition(Eigen::VectorXd u, double zupt1) {
 
 //        MYCHECK(1);
@@ -590,12 +596,18 @@ public:
                 x_h_.block(6,0,3,1) = so3.log();
             }
             std::cout << "x_h_:" << x_h_ << std::endl;
+            x_h_ = last_x_h_;
         }
+        last_x_h_ = x_h_;
 
 
         return x_h_;
     }
 
+    /**
+     * Return orientation in x-o-y plane.(Yaw)
+     * @return
+     */
     double getOriente() {
 //        Eigen::Vector2d avg_vec = std::partial_sum(heading_vec_deque_.begin(),
 //                                                   heading_vec_deque_.end(),
@@ -698,6 +710,7 @@ private:
     Eigen::Matrix<double, 3, 9> H_;
 
     Eigen::Matrix<double, 9, 1> x_h_;
+    Eigen::Matrix<double,9,1> last_x_h_;
 
     Eigen::Matrix<double,9,9> F_;
     Eigen::Matrix<double,9,6> G_;
