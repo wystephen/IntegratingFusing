@@ -593,7 +593,8 @@ public:
                 Eigen::Quaterniond quaterniond(quat_(3),quat_(0),quat_(1),quat_(2));
 //                quaterniond.
                 Sophus::SO3 so3(quaterniond);
-                x_h_.block(6,0,3,1) = so3.log();
+//                x_h_.block(6,0,3,1) = so3.log();
+                x_h_.block(6,0,3,1) = Eigen::Vector3d(0.0,0.0,0.0);
             }
             std::cout << "x_h_:" << x_h_ << std::endl;
 //            x_h_ = last_x_h_;
