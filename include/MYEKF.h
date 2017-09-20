@@ -503,9 +503,11 @@ public:
 
         if(std::isnan(x_out.block(0,0,6,1).sum()))
         {
-            std::cout << "after :" << x_out.transpose()
+            std::cout << "error in "<< __FILE__ << ":" << __LINE__
+                      << "Function name :" << __FUNCTION__<<std::endl
+                    << "after :" << x_out.transpose()
                       << "before :" << x_in.transpose()
-                      << " dx :" << dx
+                      << " dx :" << dx.transpose()
                       << " q in :" << q_in << std::endl;
         }
         assert(!std::isnan(x_out.block(0,0,6,1).sum()));//&&("This is in "+__FILE__+":"+__LINE__))
