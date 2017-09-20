@@ -501,9 +501,10 @@ public:
         quat_ = dcm2q(R);
 
 
-        if(std::isnan(x_out.sum()))
+        if(std::isnan(x_out.block(0,0,6,1).sum()))
         {
-            std::cout << "after :" << x_out.transpose() << std::endl;
+            std::cout << "after :" << x_out.transpose()
+                      << "before :" << x_in.transpose() << std::endl;
         }
         assert(!std::isnan(x_out.block(0,0,6,1).sum()));//&&("This is in "+__FILE__+":"+__LINE__))
 
@@ -603,7 +604,7 @@ public:
 //                x_h_.block(6,0,3,1) = so3.log();
                 x_h_.block(6,0,3,1) = Eigen::Vector3d(0.0,0.0,0.0);
             }
-            std::cout << "x_h_:" << x_h_ << std::endl;
+//            std::cout << "x_h_:" << x_h_ << std::endl;
 //            x_h_ = last_x_h_;
         }
         last_x_h_ = x_h_;
