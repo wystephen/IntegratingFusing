@@ -596,7 +596,7 @@ public:
                 x_h_.block(6,0,3,1) = so3.log();
             }
             std::cout << "x_h_:" << x_h_ << std::endl;
-            x_h_ = last_x_h_;
+//            x_h_ = last_x_h_;
         }
         last_x_h_ = x_h_;
 

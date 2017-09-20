@@ -164,10 +164,6 @@ int main() {
 
 
 
-
-
-
-
     out_file.close();
     out_axis.close();
 
