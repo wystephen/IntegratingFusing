@@ -500,6 +500,13 @@ public:
 
         quat_ = dcm2q(R);
 
+
+        if(std::isnan(x_out.sum()))
+        {
+            std::cout << "after :" << x_out.transpose() << std::endl;
+        }
+        assert(!std::isnan(x_out.sum()));//&&("This is in "+__FILE__+":"+__LINE__))
+
         return x_out;
 
     }

@@ -27,7 +27,11 @@ class RealTimePlot:
         plt.show()
 
     def update_trace(self, data):
+        print("all in here")
+        print(os.stat(file_name).st_atime)
+
         if (os.stat(file_name).st_mtime > self.n_time):
+
             time.sleep(1)
             self.n_time = os.stat(self.file_name).st_mtime
             self.data = np.loadtxt(self.file_name)
