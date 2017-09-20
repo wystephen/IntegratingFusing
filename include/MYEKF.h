@@ -505,7 +505,7 @@ public:
         {
             std::cout << "after :" << x_out.transpose() << std::endl;
         }
-        assert(!std::isnan(x_out.sum()));//&&("This is in "+__FILE__+":"+__LINE__))
+        assert(!std::isnan(x_out.block(0,0,6,1).sum()));//&&("This is in "+__FILE__+":"+__LINE__))
 
         return x_out;
 
