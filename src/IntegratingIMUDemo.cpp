@@ -135,6 +135,7 @@ int main() {
 //        {
 //            myekf.para_.Ts_ = imu_data(i,0)-imu_data(i-1,0);
 //        }
+        std::cout << "i:" << i << std::endl;
         zupt_v.push_back(zupt_data(i,0));
 
         Eigen::VectorXd vec = myekf.GetPosition(imu_data.block(i, 1, 1, 6).transpose(),
