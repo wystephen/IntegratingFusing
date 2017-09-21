@@ -533,11 +533,12 @@ public:
 
         P_ = (F_ * (P_)) * (F_.transpose().eval()) +
              (G_ * Q_ * G_.transpose().eval());
+        assert(!std::isnan(P_.sum()));
         if (zupt1 > 0.5) {
             Eigen::Vector3d z(-x_h_.block(3, 0, 3, 1));
 
 
-            Eigen::MatrixXd K;
+            Eigen::Matrix<double,9,3> K;
             K = P_ * H_.transpose().eval() * (H_ * P_ * H_.transpose().eval() + R_).inverse();
 
             Eigen::VectorXd dx = K * z;
@@ -557,11 +558,14 @@ public:
 
             P_ = (Id - K * H_) * P_;
 
+            assert(!std::isnan(P_.sum()));
             x_h_ = ComputeInternalState(x_h_, dx, quat_);
         }
 
 
         P_ = (P_.eval() * 0.5 + P_.transpose().eval() * 0.5);
+
+        assert(!std::isnan(P_.sum()));
 
 
         /**
