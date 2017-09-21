@@ -537,8 +537,9 @@ public:
              (G_ * Q_ * G_.transpose().eval());
         if(std::isnan(P_.sum()))
         {
+            std::cout << "last P:" << last_P_ << std::endl;
             std::cout << "F:"<<F_ << std::endl;
-            std::cout << "F*P*F'" << (F_ * (P_)) * (F_.transpose().eval()) << std::endl;
+            std::cout << "F*P*F'" << (F_ * (last_P_)) * (F_.transpose().eval()) << std::endl;
             std::cout << "G:" << G_ << std::endl;
             std::cout << "Q_:" << Q_ << std::endl;
             std::cout << "G*Q*G'" << G_*Q_*G_.transpose().eval() << std::endl;
@@ -581,7 +582,13 @@ public:
             std::cout << __FILE__ << ":"
                       << __LINE__ << ":"
                       << "P is nan ~" << std::endl;
+        }else if(std::isinf(P_.sum()))
+        {
+            std::cout << __FILE__<<":"
+                      << __LINE__ << ":"
+                      << "P is inf" <<std::endl;
         }
+
 
 
         /**
