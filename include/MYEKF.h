@@ -531,6 +531,8 @@ public:
         StateMatrix(quat_, u, para_.Ts_);
 //        MYCHECK(1);
 
+
+        auto last_P_ = P_;
         P_ = (F_ * (P_)) * (F_.transpose().eval()) +
              (G_ * Q_ * G_.transpose().eval());
         assert(!std::isnan(P_.sum()));
@@ -566,10 +568,18 @@ public:
         P_ = (P_.eval() * 0.5 + P_.transpose().eval() * 0.5);
 
         assert(!std::isnan(P_.sum()));
+        if(std::isnan(P_.sum()))
+        {
+            std::cout << __FILE__ << ":"
+                      << __LINE__ << ":"
+                      << "P is nan ~" << std::endl;
+        }
 
 
         /**
          * Plugin module....
+         *
+         * Without any process of P
          */
         Eigen::Vector3d xaxis(1.0, 0.0, 0.0);
         xaxis = q2dcm(quat_) * xaxis;
@@ -624,6 +634,7 @@ public:
 //            x_h_ = last_x_h_;
         }
         last_x_h_ = x_h_;
+
 
 
         return x_h_;
