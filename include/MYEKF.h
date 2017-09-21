@@ -543,6 +543,14 @@ public:
             Eigen::VectorXd dx = K * z;
             dx_ = dx;
 
+            if(std::isnan(dx_.sum()))
+            {
+
+                std::cout << __FILE__<<":"
+                          << __LINE__ << ":dx is "
+                          << dx_.transpose() << std::endl;
+            }
+
             Eigen::MatrixXd Id;
             Id.resize(9, 9);
             Id.setIdentity();
@@ -733,7 +741,7 @@ private:
 
     Eigen::Vector4d quat_;
 
-    Eigen::MatrixXd dx_;
+    Eigen::Matrix<double,9,1> dx_;
 
 
     std::deque<Eigen::Vector2d> heading_vec_deque_;
