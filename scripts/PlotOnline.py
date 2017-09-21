@@ -36,8 +36,10 @@ class RealTimePlot:
             self.n_time = os.stat(self.file_name).st_mtime
             self.data = np.loadtxt(self.file_name)
             self.ax.clear()
-
-            self.ax.plot(self.data[:, 0], self.data[:, 1], self.data[:, 2], '-*')
+            if self.data.shape[0]>1:
+                self.ax.plot(self.data[:, 0],
+                             self.data[:, 1],
+                             self.data[:, 2], '-*')
 
 
 if __name__ == '__main__':
