@@ -4,7 +4,7 @@ project(IntegratingFusing)
 set(CMAKE_CXX_STANDARD 11)
 
 #set(CMAKE_BUILD_TOOL DEBUG)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -std=c++11  -msse2 -msse3 -msse4 -lopencv_aruco -lpthread -lSophus ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -std=c++11  -msse2 -msse3 -msse4 -lopencv_aruco -lpthread -lSophus ")
 #set(CUDA_NVCC_FLAGSS ${CUDA_NVCC_FLAGS} --gpu-architecture sm_20)
 
 

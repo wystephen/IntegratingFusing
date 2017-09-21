@@ -524,6 +524,7 @@ public:
     Eigen::VectorXd GetPosition(Eigen::VectorXd u, double zupt1) {
 
 //        MYCHECK(1);
+//        std::cout << P_(0,0) << std::endl;
 
         x_h_ = NavigationEquation(x_h_, u, quat_, para_.Ts_);
 //        MYCHECK(1);
@@ -559,6 +560,7 @@ public:
             std::cout << "G*Q*G'" << G_ * Q_ * G_.transpose().eval() << std::endl;
         }
         assert(!std::isnan(P_.sum()));
+        assert(!std::isinf(P_.sum()));
         if (std::isnan(P_.sum())) {
             std::cout << __FILE__ << ":"
                       << __LINE__ << ":"
@@ -589,7 +591,14 @@ public:
             Id.resize(9, 9);
             Id.setIdentity();
 
+            double tmp_p_val = P_(0,0);
             P_ = (Id - K * H_) * P_;
+            P_.block(0,0,3,3) /= 10.0;
+
+
+            std::cout << tmp_p_val << "----" << P_(0,0)
+                      << "  Is smaller than before?:"<<(((P_(0,0))<tmp_p_val)?true:false)
+                      << std::endl;
 
             assert(!std::isnan(P_.sum()));
             x_h_ = ComputeInternalState(x_h_, dx, quat_);
