@@ -535,6 +535,14 @@ public:
         auto last_P_ = P_;
         P_ = (F_ * (P_)) * (F_.transpose().eval()) +
              (G_ * Q_ * G_.transpose().eval());
+        if(std::isnan(P_.sum()))
+        {
+            std::cout << "F:"<<F_ << std::endl;
+            std::cout << "F*P*F'" << (F_ * (P_)) * (F_.transpose().eval()) << std::endl;
+            std::cout << "G:" << G_ << std::endl;
+            std::cout << "Q_:" << Q_ << std::endl;
+            std::cout << "G*Q*G'" << G_*Q_*G_.transpose().eval() << std::endl;
+        }
         assert(!std::isnan(P_.sum()));
         if (zupt1 > 0.5) {
             Eigen::Vector3d z(-x_h_.block(3, 0, 3, 1));
