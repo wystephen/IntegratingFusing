@@ -496,21 +496,20 @@ public:
 
 //        std::cout << "current R:" << R << std::endl;
         //std::cout << "delta theta :" << get
-            
+
 
         quat_ = dcm2q(R);
 
 
-        if(std::isnan(x_out.block(0,0,6,1).sum()))
-        {
-            std::cout << "error in "<< __FILE__ << ":" << __LINE__
-                      << "Function name :" << __FUNCTION__<<std::endl
-                    << "after :" << x_out.transpose()
+        if (std::isnan(x_out.block(0, 0, 6, 1).sum())) {
+            std::cout << "error in " << __FILE__ << ":" << __LINE__
+                      << "Function name :" << __FUNCTION__ << std::endl
+                      << "after :" << x_out.transpose()
                       << "before :" << x_in.transpose()
                       << " dx :" << dx.transpose()
                       << " q in :" << q_in << std::endl;
         }
-        assert(!std::isnan(x_out.block(0,0,6,1).sum()));//&&("This is in "+__FILE__+":"+__LINE__))
+        assert(!std::isnan(x_out.block(0, 0, 6, 1).sum()));//&&("This is in "+__FILE__+":"+__LINE__))
 
         return x_out;
 
@@ -535,30 +534,53 @@ public:
         auto last_P_ = P_;
         P_ = (F_ * (P_)) * (F_.transpose().eval()) +
              (G_ * Q_ * G_.transpose().eval());
-        if(std::isnan(P_.sum()))
-        {
+        if (std::isnan(P_.sum())) {
+            std::cout << __FILE__ << ":"
+                      << __LINE__ << ":"
+                      << "P is nan ~" << std::endl;
+        } else if (std::isinf(P_.sum())) {
             std::cout << "last P:" << last_P_ << std::endl;
-            std::cout << "F:"<<F_ << std::endl;
+            std::cout << "F:" << F_ << std::endl;
             std::cout << "F*P*F'" << (F_ * (last_P_)) * (F_.transpose().eval()) << std::endl;
             std::cout << "G:" << G_ << std::endl;
             std::cout << "Q_:" << Q_ << std::endl;
-            std::cout << "G*Q*G'" << G_*Q_*G_.transpose().eval() << std::endl;
+            std::cout << "G*Q*G'" << G_ * Q_ * G_.transpose().eval() << std::endl;
+
+            std::cout << __FILE__ << ":"
+                      << __LINE__ << ":"
+                      << "P is inf" << std::endl;
+        }
+        if (std::isnan(P_.sum())) {
+            std::cout << "last P:" << last_P_ << std::endl;
+            std::cout << "F:" << F_ << std::endl;
+            std::cout << "F*P*F'" << (F_ * (last_P_)) * (F_.transpose().eval()) << std::endl;
+            std::cout << "G:" << G_ << std::endl;
+            std::cout << "Q_:" << Q_ << std::endl;
+            std::cout << "G*Q*G'" << G_ * Q_ * G_.transpose().eval() << std::endl;
         }
         assert(!std::isnan(P_.sum()));
+        if (std::isnan(P_.sum())) {
+            std::cout << __FILE__ << ":"
+                      << __LINE__ << ":"
+                      << "P is nan ~" << std::endl;
+        } else if (std::isinf(P_.sum())) {
+            std::cout << __FILE__ << ":"
+                      << __LINE__ << ":"
+                      << "P is inf" << std::endl;
+        }
         if (zupt1 > 0.5) {
             Eigen::Vector3d z(-x_h_.block(3, 0, 3, 1));
 
 
-            Eigen::Matrix<double,9,3> K;
+            Eigen::Matrix<double, 9, 3> K;
             K = P_ * H_.transpose().eval() * (H_ * P_ * H_.transpose().eval() + R_).inverse();
 
             Eigen::VectorXd dx = K * z;
             dx_ = dx;
 
-            if(std::isnan(dx_.sum()))
-            {
+            if (std::isnan(dx_.sum())) {
 
-                std::cout << __FILE__<<":"
+                std::cout << __FILE__ << ":"
                           << __LINE__ << ":dx is "
                           << dx_.transpose() << std::endl;
             }
@@ -577,16 +599,14 @@ public:
         P_ = (P_.eval() * 0.5 + P_.transpose().eval() * 0.5);
 
         assert(!std::isnan(P_.sum()));
-        if(std::isnan(P_.sum()))
-        {
+        if (std::isnan(P_.sum())) {
             std::cout << __FILE__ << ":"
                       << __LINE__ << ":"
                       << "P is nan ~" << std::endl;
-        }else if(std::isinf(P_.sum()))
-        {
-            std::cout << __FILE__<<":"
+        } else if (std::isinf(P_.sum())) {
+            std::cout << __FILE__ << ":"
                       << __LINE__ << ":"
-                      << "P is inf" <<std::endl;
+                      << "P is inf" << std::endl;
         }
 
 
@@ -634,22 +654,19 @@ public:
             last_zupt_ = false;
         }
 
-        if(std::isnan(x_h_.sum()))
-        {
-            if(!std::isnan(x_h_.block(0,0,6,1).sum())
-               &&std::isnan(x_h_.block(6,0,3,1).sum()))
-            {
-                Eigen::Quaterniond quaterniond(quat_(3),quat_(0),quat_(1),quat_(2));
+        if (std::isnan(x_h_.sum())) {
+            if (!std::isnan(x_h_.block(0, 0, 6, 1).sum())
+                && std::isnan(x_h_.block(6, 0, 3, 1).sum())) {
+                Eigen::Quaterniond quaterniond(quat_(3), quat_(0), quat_(1), quat_(2));
 //                quaterniond.
                 Sophus::SO3 so3(quaterniond);
 //                x_h_.block(6,0,3,1) = so3.log();
-                x_h_.block(6,0,3,1) = Eigen::Vector3d(0.0,0.0,0.0);
+                x_h_.block(6, 0, 3, 1) = Eigen::Vector3d(0.0, 0.0, 0.0);
             }
 //            std::cout << "x_h_:" << x_h_ << std::endl;
 //            x_h_ = last_x_h_;
         }
         last_x_h_ = x_h_;
-
 
 
         return x_h_;
@@ -719,8 +736,7 @@ public:
 //
 //       return 0.0;
 //    }
-    Eigen::Isometry3d getTransformation()
-    {
+    Eigen::Isometry3d getTransformation() {
         Eigen::Isometry3d transform = (Eigen::Isometry3d::Identity());
 
         Eigen::Quaterniond the_quat;
@@ -729,7 +745,7 @@ public:
         the_quat.z() = quat_(2);
         the_quat.w() = quat_(3);
 
-        Eigen::Vector3d offset(x_h_(0),x_h_(1),x_h_(2));
+        Eigen::Vector3d offset(x_h_(0), x_h_(1), x_h_(2));
 
         Eigen::Matrix3d rotation_matrix = the_quat.toRotationMatrix();
 
@@ -761,17 +777,17 @@ private:
     Eigen::Matrix<double, 3, 9> H_;
 
     Eigen::Matrix<double, 9, 1> x_h_;
-    Eigen::Matrix<double,9,1> last_x_h_;
+    Eigen::Matrix<double, 9, 1> last_x_h_;
 
-    Eigen::Matrix<double,9,9> F_;
-    Eigen::Matrix<double,9,6> G_;
+    Eigen::Matrix<double, 9, 9> F_;
+    Eigen::Matrix<double, 9, 6> G_;
 
-    Eigen::Matrix<double,9,3> K_;
+    Eigen::Matrix<double, 9, 3> K_;
 
 
     Eigen::Vector4d quat_;
 
-    Eigen::Matrix<double,9,1> dx_;
+    Eigen::Matrix<double, 9, 1> dx_;
 
 
     std::deque<Eigen::Vector2d> heading_vec_deque_;
