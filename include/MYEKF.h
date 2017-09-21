@@ -599,9 +599,9 @@ public:
             }
 
 
-            std::cout << tmp_p_val << "----" << P_(0, 0)
-                      << "  Is smaller than before?:" << (((P_(0, 0)) < tmp_p_val) ? true : false)
-                      << std::endl;
+//            std::cout << tmp_p_val << "----" << P_(0, 0)
+//                      << "  Is smaller than before?:" << (((P_(0, 0)) < tmp_p_val) ? true : false)
+//                      << std::endl;
 
             assert(!std::isnan(P_.sum()));
             x_h_ = ComputeInternalState(x_h_, dx, quat_);
