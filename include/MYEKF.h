@@ -591,13 +591,16 @@ public:
             Id.resize(9, 9);
             Id.setIdentity();
 
-            double tmp_p_val = P_(0,0);
+            double tmp_p_val = P_(0, 0);
             P_ = (Id - K * H_) * P_;
-            P_.block(0,0,3,3) /= 10.0;
+            if (P_(0, 0) > 1e5) {
+
+                P_.block(0, 0, 3, 3) /= 10.0;
+            }
 
 
-            std::cout << tmp_p_val << "----" << P_(0,0)
-                      << "  Is smaller than before?:"<<(((P_(0,0))<tmp_p_val)?true:false)
+            std::cout << tmp_p_val << "----" << P_(0, 0)
+                      << "  Is smaller than before?:" << (((P_(0, 0)) < tmp_p_val) ? true : false)
                       << std::endl;
 
             assert(!std::isnan(P_.sum()));
@@ -608,15 +611,15 @@ public:
         P_ = (P_.eval() * 0.5 + P_.transpose().eval() * 0.5);
 
         assert(!std::isnan(P_.sum()));
-        if (std::isnan(P_.sum())) {
-            std::cout << __FILE__ << ":"
-                      << __LINE__ << ":"
-                      << "P is nan ~" << std::endl;
-        } else if (std::isinf(P_.sum())) {
-            std::cout << __FILE__ << ":"
-                      << __LINE__ << ":"
-                      << "P is inf" << std::endl;
-        }
+//        if (std::isnan(P_.sum())) {
+//            std::cout << __FILE__ << ":"
+//                      << __LINE__ << ":"
+//                      << "P is nan ~" << std::endl;
+//        } else if (std::isinf(P_.sum())) {
+//            std::cout << __FILE__ << ":"
+//                      << __LINE__ << ":"
+//                      << "P is inf" << std::endl;
+//        }
 
 
 

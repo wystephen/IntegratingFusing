@@ -112,8 +112,10 @@ int main() {
     init_para.init_heading1_ = 0.0;// -2.0;//M_PI / 2.0;
 
 
-    init_para.sigma_acc_ = 0.5 * Eigen::Vector3d(1,1,1);
-    init_para.sigma_gyro_= 0.5 * Eigen::Vector3d(1,1,1) * M_PI / 180.0;
+    init_para.sigma_acc_ = 1.5 * Eigen::Vector3d(1,1,1);
+    init_para.sigma_gyro_= 2.5 * Eigen::Vector3d(1,1,1) * M_PI / 180.0;
+
+    init_para.sigma_vel_ = 0.005 * Eigen::Vector3d(1.0,1.0,1.0);
 
     init_para.sigma_initial_pos1_ *= 1e-3;
 //    init_para.sigma_initial_vel1_ *=
